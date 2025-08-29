@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated ERP Planning Dashboard (with Inventory Aging)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F1F5F9; }
+        .card { background-color: white; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1); }
+        .input-field { width: 100%; padding: 0.5rem 0.75rem; border: 1px solid #CBD5E1; border-radius: 0.375rem; transition: all 0.2s; }
+        .input-field:focus { outline: none; border-color: #4338CA; box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.2); }
+        .btn { padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 600; transition: all 0.2s; text-align: center; cursor: pointer; }
+        .btn-primary { background-color: #4338CA; color: white; }
+        .btn-primary:hover { background-color: #3730A3; }
+        .btn-secondary { background-color: #E2E8F0; color: #475569; }
+        .btn-secondary:hover { background-color: #CBD5E1; }
+        .kpi-value { font-weight: 700; font-size: 1.875rem; line-height: 1; }
+        .planning-table { width: 100%; border-collapse: collapse; }
+        .planning-table th, .planning-table td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #E2E8F0; }
+        .planning-table th { background-color: #F8FAFC; font-size: 0.75rem; color: #64748B; text-transform: uppercase; }
+        .planning-table td { font-size: 0.875rem; }
+        .planning-table input { text-align: right; }
+        .stock-ok { color: #16A34A; }
+        .stock-surplus { color: #EA580C; }
+        .stock-shortage { color: #DC2626; font-weight: 700; }
+        .wip-aged { background-color: #FEF3C7; }
+
+        @media print {
+            body { background-color: white !important; }
+            header .flex.items-center, #params-form, #wip-table-container + .mt-3, .planning-table input, .btn, select, [data-wip-index] {
+                display: none !important;
+            }
+            .card {
+                box-shadow: none;
+                border: 1px solid #e2e8f0;
+                page-break-inside: avoid;
+            }
+            .grid {
+                display: block !important;
+            }
+            .lg\:col-span-1, .lg\:col-span-2 {
+                width: 100%;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .h-80 {
+                height: 300px !important; /* Give chart a fixed height for printing */
+            }
+            .planning-table input {
+                border: none;
+                background-color: transparent;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+    <div class="container mx-auto p-4">
+        <header class="flex flex-wrap justify-between items-center mb-4">
+            <h1 class="text-2xl font-bold text-slate-900">Operational Planning Dashboard</h1>
+            <div class="flex items-center space-x-4 mt-4 md:mt-0">
+                <div class="flex items-center space-x-2">
+                    <label for="cultivar-select" class="text-sm font-medium">Cultivar:</label>
+                    <select id="cultivar-select" class="input-field w-48">
+                        <option value="berangan">Berangan (Realistic Sim)</option>
+                        <option value="cavendish">Cavendish</option>
+                    </select>
+                </div>
+                <button id="print-btn" class="btn btn-primary">Print / Save as PDF</button>
+            </div>
+        </header>
+
+        <!-- KPI Summary -->
+        <div id="kpi-summary" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <!-- Left Column: Controls -->
+            <div class="lg:col-span-1 space-y-4">
+                <div class="card p-4">
+                    <h2 class="text-lg font-bold mb-3">Operational Parameters</h2>
+                    <div id="params-form" class="space-y-2"></div>
+                </div>
+                <div class="card p-4">
+                    <h2 class="text-lg font-bold mb-3">Work-in-Progress Batches</h2>
+                    <div id="wip-table-container" class="max-h-60 overflow-y-auto pr-2"></div>
+                    <div class="mt-3">
+                        <h3 class="font-semibold mb-2">Add New Batch</h3>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="date" id="new-wip-date" class="input-field">
+                            <input type="number" id="new-wip-qty" class="input-field" placeholder="Quantity">
+                        </div>
+                        <button id="add-wip-btn" class="btn btn-secondary w-full mt-2">Add WIP Batch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Main Planning -->
+            <div class="lg:col-span-2 space-y-4">
+                <div class="card p-4">
+                    <h2 class="text-lg font-bold mb-3">12-Month Rolling Plan</h2>
+                    <div class="overflow-x-auto">
+                        <table class="planning-table">
+                            <thead id="planning-head"></thead>
+                            <tbody id="planning-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+                 <div class="card p-4">
+                    <h2 class="text-lg font-bold mb-3">Inventory Projections</h2>
+                    <div class="h-80"><canvas id="inventoryChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const CULTIVAR_DATA = {
+        berangan: {
+            name: 'Berangan',
+            params: { leadTime: 9, multiFactor: 4, safetyStock: 20000 },
+            demand: [75000, 80000, 110000, 105000, 85000, 70000, 30000, 40000, 75000, 80000, 85000, 90000],
+            wip: [
+                { date: '2024-06-01', qty: 15000 }, // Aged batch > 12 months old
+                { date: '2024-12-01', qty: 20000 },
+                { date: '2025-01-01', qty: 21000 },
+                { date: '2025-02-01', qty: 18000 },
+                { date: '2025-03-01', qty: 19000 },
+                { date: '2025-04-01', qty: 25000 },
+                { date: '2025-05-01', qty: 22000 },
+                { date: '2025-06-01', qty: 24000 },
+                { date: '2025-07-01', qty: 23000 },
+            ]
+        },
+        cavendish: {
+            name: 'Cavendish',
+            params: { leadTime: 8, multiFactor: 5, safetyStock: 15000 },
+            demand: [60000, 65000, 70000, 62000, 68000, 90000, 70000, 65000, 85000, 100000, 75000, 70000],
+            wip: [
+                { date: '2025-01-01', qty: 15000 },
+                { date: '2025-03-01', qty: 12000 },
+                { date: '2025-06-01', qty: 20000 }
+            ]
+        }
+    };
+
+    let currentCultivar = 'berangan';
+    const PLANNING_HORIZON = 12;
+    const planningMonths = [];
+    const today = new Date();
+    for (let i = 0; i < PLANNING_HORIZON; i++) {
+        planningMonths.push(new Date(today.getFullYear(), today.getMonth() + i, 1));
+    }
+
+    const inventoryChartCtx = document.getElementById('inventoryChart').getContext('2d');
+    let inventoryChart;
+
+    function initializeChart() {
+        if (inventoryChart) inventoryChart.destroy();
+        inventoryChart = new Chart(inventoryChartCtx, {
+            type: 'bar',
+            data: {
+                labels: planningMonths.map(d => d.toLocaleString('default', { month: 'short', year: '2-digit' })),
+                datasets: [
+                    { label: 'Demand', data: [], backgroundColor: '#F472B6' },
+                    { label: 'Projected Closing Inventory', data: [], borderColor: '#4338CA', type: 'line', fill: false, tension: 0.1 },
+                    { label: 'Safety Stock', data: [], borderColor: '#F59E0B', borderDash: [5, 5], type: 'line', fill: false }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                scales: { y: { beginAtZero: true, ticks: { callback: value => `${value/1000}k` } } },
+                plugins: { tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.raw.toLocaleString()} units` } } }
+            }
+        });
+    }
+
+    function renderParams() {
+        const data = CULTIVAR_DATA[currentCultivar];
+        const container = document.getElementById('params-form');
+        container.innerHTML = `
+            <div><label class="text-sm font-medium">Lead Time (Months)</label><input type="number" data-param="leadTime" class="input-field mt-1" value="${data.params.leadTime}"></div>
+            <div><label class="text-sm font-medium">Multiplication Factor</label><input type="number" data-param="multiFactor" class="input-field mt-1" value="${data.params.multiFactor}"></div>
+            <div><label class="text-sm font-medium">Safety Stock (Units)</label><input type="number" data-param="safetyStock" class="input-field mt-1" value="${data.params.safetyStock}"></div>
+        `;
+    }
+
+    function renderWipTable() {
+        const data = CULTIVAR_DATA[currentCultivar];
+        const container = document.getElementById('wip-table-container');
+        if (data.wip.length === 0) {
+            container.innerHTML = `<p class="text-sm text-slate-500 text-center py-4">No WIP batches.</p>`; return;
+        }
+        let tableHTML = `<table class="w-full text-sm"><thead><tr class="border-b"><th class="p-2">Date</th><th class="p-2 text-right">Qty</th><th class="p-2 text-right">Age (Mo)</th><th></th></tr></thead><tbody>`;
+        data.wip.forEach((batch, index) => {
+            const batchDate = new Date(batch.date);
+            const ageInMonths = (today.getFullYear() - batchDate.getFullYear()) * 12 + (today.getMonth() - batchDate.getMonth());
+            const isAged = ageInMonths > 12 ? 'wip-aged' : '';
+            tableHTML += `
+                <tr class="border-b ${isAged}">
+                    <td class="p-2">${batch.date}</td>
+                    <td class="p-2 text-right">${batch.qty.toLocaleString()}</td>
+                    <td class="p-2 text-right font-medium">${ageInMonths}</td>
+                    <td class="p-2 text-right"><button class="text-red-500 hover:text-red-700 font-bold" data-wip-index="${index}">&times;</button></td>
+                </tr>
+            `;
+        });
+        tableHTML += `</tbody></table>`;
+        container.innerHTML = tableHTML;
+    }
+
+    function runFullUpdate() {
+        const data = CULTIVAR_DATA[currentCultivar];
+        const params = data.params;
+        const plan = [];
+        let inventoryParcels = []; // Array of {age: months, qty: units}
+
+        for (let i = 0; i < PLANNING_HORIZON; i++) {
+            const month = planningMonths[i];
+            
+            // 1. Age existing inventory
+            inventoryParcels.forEach(p => p.age++);
+
+            // 2. Add new supply
+            const wipMaturingQty = data.wip.reduce((sum, batch) => {
+                const matuDate = new Date(batch.date);
+                matuDate.setMonth(matuDate.getMonth() + params.leadTime);
+                if (matuDate.getFullYear() === month.getFullYear() && matuDate.getMonth() === month.getMonth()) {
+                    return sum + batch.qty;
+                }
+                return sum;
+            }, 0) * params.multiFactor;
+            if (wipMaturingQty > 0) inventoryParcels.push({ age: 0, qty: wipMaturingQty });
+
+            const newProductionQty = (i >= params.leadTime && plan[i - params.leadTime]) ? plan[i - params.leadTime].recommendedInitiations * params.multiFactor : 0;
+            if (newProductionQty > 0) inventoryParcels.push({ age: 0, qty: newProductionQty });
+            
+            inventoryParcels.sort((a, b) => b.age - a.age); // Oldest first
+
+            // 3. Fulfill demand (FIFO)
+            let demand = data.demand[i] || 0;
+            for (let j = inventoryParcels.length - 1; j >= 0; j--) {
+                const parcel = inventoryParcels[j];
+                if (demand <= 0) break;
+                const consumed = Math.min(demand, parcel.qty);
+                parcel.qty -= consumed;
+                demand -= consumed;
+            }
+            inventoryParcels = inventoryParcels.filter(p => p.qty > 0);
+
+            // 4. Calculate closing state
+            const closingInventoryQty = inventoryParcels.reduce((sum, p) => sum + p.qty, 0);
+            const totalAgeQty = inventoryParcels.reduce((sum, p) => sum + (p.qty * p.age), 0);
+            const avgAge = closingInventoryQty > 0 ? totalAgeQty / closingInventoryQty : 0;
+
+            // 5. Recommend initiations
+            const futureDemandMonthIndex = i + params.leadTime;
+            let recommendedInitiations = 0;
+            if (futureDemandMonthIndex < PLANNING_HORIZON) {
+                const futureDemand = data.demand[futureDemandMonthIndex];
+                const neededProduction = Math.max(0, futureDemand + params.safetyStock - closingInventoryQty);
+                recommendedInitiations = Math.ceil(neededProduction / params.multiFactor);
+            }
+
+            plan.push({
+                month: month,
+                demand: data.demand[i] || 0,
+                totalSupply: wipMaturingQty + newProductionQty,
+                closingInventory: closingInventoryQty,
+                avgAge: avgAge,
+                recommendedInitiations: recommendedInitiations
+            });
+        }
+
+        // --- Render UI ---
+        const head = document.getElementById('planning-head');
+        const body = document.getElementById('planning-body');
+        head.innerHTML = `<tr><th>Month</th><th>Demand</th><th>Supply</th><th>Closing Inv.</th><th>Avg. Inv. Age</th><th>Status</th><th>Recommended Initiations</th></tr>`;
+        body.innerHTML = plan.map(p => {
+            let statusClass = 'stock-ok'; let statusText = 'OK';
+            if (p.closingInventory < params.safetyStock) {
+                statusClass = 'stock-shortage'; statusText = `SHORTAGE (${(p.closingInventory - params.safetyStock).toLocaleString()})`;
+            } else if (p.closingInventory > params.safetyStock * 2) {
+                statusClass = 'stock-surplus'; statusText = 'Surplus';
+            }
+            return `
+                <tr>
+                    <td class="font-semibold">${p.month.toLocaleString('default', { month: 'short', year: '2-digit' })}</td>
+                    <td><input type="number" class="input-field demand-input" value="${p.demand}"></td>
+                    <td class="text-right">${p.totalSupply.toLocaleString()}</td>
+                    <td class="text-right font-medium ${statusClass}">${p.closingInventory.toLocaleString()}</td>
+                    <td class="text-right">${p.avgAge.toFixed(1)} mo</td>
+                    <td class="${statusClass}">${statusText}</td>
+                    <td class="text-right bg-indigo-50">${p.recommendedInitiations.toLocaleString()}</td>
+                </tr>
+            `;
+        }).join('');
+
+        const totalDemand = plan.reduce((a, b) => a + b.demand, 0);
+        const totalSales = plan.reduce((a, b) => a + Math.min(b.openingInventory + b.totalSupply, b.demand), 0); // Simplified for KPI
+        const serviceLevel = totalDemand > 0 ? (totalSales / totalDemand) * 100 : 100;
+        const endingInv = plan.length > 0 ? plan[plan.length - 1].closingInventory : 0;
+
+        inventoryChart.data.datasets[0].data = plan.map(p => p.demand);
+        inventoryChart.data.datasets[1].data = plan.map(p => p.closingInventory);
+        inventoryChart.data.datasets[2].data = Array(PLANNING_HORIZON).fill(params.safetyStock);
+        inventoryChart.update();
+
+        document.getElementById('kpi-summary').innerHTML = `
+            <div class="card p-3"><h3 class="text-sm font-semibold text-slate-500">Total Demand</h3><p class="kpi-value text-slate-900 mt-1">${Math.round(totalDemand/1000)}k</p></div>
+            <div class="card p-3"><h3 class="text-sm font-semibold text-slate-500">Service Level</h3><p class="kpi-value text-slate-900 mt-1">${serviceLevel.toFixed(1)}%</p></div>
+            <div class="card p-3"><h3 class="text-sm font-semibold text-slate-500">Ending Inventory</h3><p class="kpi-value text-slate-900 mt-1">${Math.round(endingInv/1000)}k</p></div>
+            <div class="card p-3"><h3 class="text-sm font-semibold text-slate-500">Avg. Supply</h3><p class="kpi-value text-slate-900 mt-1">${Math.round(plan.reduce((a,b) => a + b.totalSupply, 0) / 12 / 1000)}k</p></div>
+        `;
+    }
+
+    function setupEventListeners() {
+        document.getElementById('cultivar-select').addEventListener('change', (e) => {
+            currentCultivar = e.target.value;
+            renderParams(); renderWipTable(); runFullUpdate();
+        });
+        document.getElementById('params-form').addEventListener('change', (e) => {
+            if (e.target.dataset.param) {
+                const key = e.target.dataset.param;
+                const value = parseFloat(e.target.value);
+                if (!isNaN(value)) { CULTIVAR_DATA[currentCultivar].params[key] = value; runFullUpdate(); }
+            }
+        });
+        document.getElementById('add-wip-btn').addEventListener('click', () => {
+            const date = document.getElementById('new-wip-date').value;
+            const qty = parseInt(document.getElementById('new-wip-qty').value);
+            if (date && qty > 0) {
+                CULTIVAR_DATA[currentCultivar].wip.push({ date, qty });
+                CULTIVAR_DATA[currentCultivar].wip.sort((a, b) => new Date(a.date) - new Date(b.date));
+                renderWipTable(); runFullUpdate();
+                document.getElementById('new-wip-date').value = ''; document.getElementById('new-wip-qty').value = '';
+            }
+        });
+        document.getElementById('wip-table-container').addEventListener('click', (e) => {
+            if (e.target.dataset.wipIndex) {
+                const index = parseInt(e.target.dataset.wipIndex);
+                CULTIVAR_DATA[currentCultivar].wip.splice(index, 1);
+                renderWipTable(); runFullUpdate();
+            }
+        });
+        document.getElementById('planning-body').addEventListener('change', (e) => {
+             if (e.target.classList.contains('demand-input')) {
+                const row = e.target.closest('tr');
+                const rowIndex = Array.from(row.parentNode.children).indexOf(row);
+                const newDemand = parseInt(e.target.value);
+                if (!isNaN(newDemand) && rowIndex !== -1) {
+                    CULTIVAR_DATA[currentCultivar].demand[rowIndex] = newDemand;
+                    runFullUpdate();
+                }
+             }
+        });
+        document.getElementById('print-btn').addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    // --- Initial Load ---
+    initializeChart();
+    renderParams();
+    renderWipTable();
+    runFullUpdate();
+    setupEventListeners();
+});
+</script>
+</body>
+</html>
