@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bukit Senorang Oil Mill - Advisory Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            border-color: #1d4ed8;
+            background-color: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .kpi-card {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        details > summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 1rem;
+            background-color: #e5e7eb;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+        }
+        details > summary:hover {
+            background-color: #d1d5db;
+        }
+        details[open] > summary {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        details > div {
+            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+        }
+        .page-ref {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 400;
+            margin-left: 8px;
+        }
+        
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: white;
+                font-size: 10pt;
+            }
+            #tab-nav, #printButton {
+                display: none;
+            }
+            header {
+                text-align: left;
+                border-bottom: 2px solid black;
+                padding-bottom: 1rem;
+                margin-bottom: 2rem;
+            }
+            .container {
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .tab-content {
+                display: block !important; /* Show all sections for a complete report */
+            }
+            .kpi-card, .bg-white {
+                box-shadow: none !important;
+                border: 1px solid #e5e7eb;
+                page-break-inside: avoid;
+            }
+            .grid {
+                display: block; /* Stack grid items vertically for printing */
+            }
+            .grid > * {
+                margin-bottom: 1.5rem;
+            }
+            details {
+                page-break-inside: avoid;
+            }
+            details > summary {
+                background-color: transparent !important;
+                border-bottom: 1px solid #ccc;
+                padding: 0.5rem 0;
+            }
+            details > div {
+                 border: none;
+                 padding: 1rem 0;
+            }
+            canvas {
+                max-width: 100% !important;
+            }
+            .text-red-600 {
+                color: #dc2626 !important;
+            }
+            .text-green-600 {
+                 color: #16a34a !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="text-center mb-8 relative">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800">Bukit Senorang Palm Oil Mill</h1>
+            <p class="text-lg text-gray-600 mt-2">Advisory Report Interactive Portal (Visit: July 17-18, 2025)</p>
+            <button id="printButton" class="absolute top-0 right-0 bg-blue-600 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition duration-300 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                Save as PDF
+            </button>
+        </header>
+
+        <!-- Tabs Navigation -->
+        <nav class="flex flex-wrap justify-center border-b border-gray-300 mb-8" id="tab-nav">
+            <button class="tab-button active text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="overview">Dashboard</button>
+            <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="extraction">Extraction Rates</button>
+            <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="quality">Quality & Losses</button>
+            <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="operations">Operations</button>
+            <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="stations">Station Analysis</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main id="tab-container">
+            <!-- Overview / Dashboard -->
+            <div id="overview" class="tab-content active">
+                <h2 class="text-2xl font-bold text-gray-700 mb-6">Performance Dashboard</h2>
+                
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="kpi-card">
+                        <h3 class="text-gray-500 font-medium">FFB Processed (FY 24/25) <span class="page-ref">(p. 2)</span></h3>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">182,824 <span class="text-lg font-medium">mt</span></p>
+                        <p class="text-sm text-green-600 mt-1">+13.7% vs FY 23/24</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="text-gray-500 font-medium">Oil Extraction Rate (OER) <span class="page-ref">(p. 3)</span></h3>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">18.52 <span class="text-lg font-medium">%</span></p>
+                        <p class="text-sm text-red-600 mt-1">-0.55% point vs FY 23/24</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="text-gray-500 font-medium">Kernel Extraction Rate (KER) <span class="page-ref">(p. 4)</span></h3>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">4.68 <span class="text-lg font-medium">%</span></p>
+                        <p class="text-sm text-red-600 mt-1">-0.21% point vs FY 23/24</p>
+                    </div>
+                    <div class="kpi-card">
+                        <h3 class="text-gray-500 font-medium">Breakdown Rate (FY 24/25) <span class="page-ref">(p. 8)</span></h3>
+                        <p class="text-3xl font-bold text-blue-600 mt-2">1.32 <span class="text-lg font-medium">%</span></p>
+                        <p class="text-sm text-green-600 mt-1">Well within 3% limit</p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Monthly FFB Processed (mt) <span class="page-ref">(p. 2)</span></h3>
+                        <canvas id="ffbProcessedChart"></canvas>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">FFB Grading: Under-ripe & Outside Suppliers <span class="page-ref">(p. 14)</span></h3>
+                         <canvas id="ffbGradingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extraction Rates -->
+            <div id="extraction" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-700 mb-6">Extraction Rate Analysis</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">OER Comparison (Jan-Jun 2025) <span class="page-ref">(p. 3)</span></h3>
+                        <canvas id="oerComparisonChart"></canvas>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">KER Comparison (Jan-Jun 2025) <span class="page-ref">(p. 5)</span></h3>
+                        <canvas id="kerComparisonChart"></canvas>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4">Shell Extraction Rate (SER %) - Jan to Jun Comparison <span class="page-ref">(p. 6)</span></h3>
+                        <canvas id="serComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quality & Losses -->
+            <div id="quality" class="tab-content">
+                 <h2 class="text-2xl font-bold text-gray-700 mb-6">Product Quality & Process Losses</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">CPO & Kernel Quality (FY 24/25) <span class="page-ref">(p. 10)</span></h3>
+                        <p class="mb-4">All product quality metrics were reported to be within their control limits.</p>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                                <span class="font-medium text-gray-700">CPO FFA %</span>
+                                <span class="font-bold text-lg text-green-600">3.50%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                                <span class="font-medium text-gray-700">CPO DOBI</span>
+                                <span class="font-bold text-lg text-green-600">2.62</span>
+                            </div>
+                             <div class="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+                                <span class="font-medium text-gray-700">Kernel FFA %</span>
+                                <span class="font-bold text-lg text-green-600">1.86%</span>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Oil Losses / FFB (FY 24/25) vs Limits <span class="page-ref">(p. 11)</span></h3>
+                         <canvas id="oilLossesChart"></canvas>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+                        <h3 class="text-lg font-semibold mb-4">Kernel Losses / FFB (FY 24/25) vs Limits <span class="page-ref">(p. 12)</span></h3>
+                         <canvas id="kernelLossesChart"></canvas>
+                         <p class="text-center text-sm text-gray-500 mt-2">Note: Report suggests expressing losses over station samples for more effective process control monitoring.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Operations -->
+            <div id="operations" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-700 mb-6">Mill Operations</h2>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Milling Throughput & Breakdown <span class="page-ref">(p. 6-8)</span></h3>
+                        <canvas id="throughputBreakdownChart"></canvas>
+                         <p class="text-center text-sm text-gray-500 mt-2">Manager reports actual pressing throughput is higher (~40 mt/hr) but reported lower to meet license limits.</p>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-lg font-semibold mb-4">Rainfall vs. OER (Jan-Jun) <span class="page-ref">(p. 9)</span></h3>
+                        <canvas id="rainfallOerChart"></canvas>
+                        <p class="text-center text-sm text-gray-500 mt-2">Data shows no clear correlation between rainfall and OER for this mill.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Station Analysis -->
+            <div id="stations" class="tab-content space-y-4">
+                <h2 class="text-2xl font-bold text-gray-700 mb-6">Station-by-Station Analysis & Recommendations</h2>
+                <!-- FFB Reception -->
+                <details>
+                    <summary>FFB Reception & Grading <span class="page-ref">(p. 13-15)</span></summary>
+                    <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Observations</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                            <li>Contribution from outside suppliers increased from 36% (May 2024) to 43% (June 2025).</li>
+                            <li>Number of outside suppliers grew from 9 to 23 in the same period.</li>
+                            <li>Percentage of under-ripe crops increased from ~9% to ~17%.</li>
+                            <li>No strong correlation observed between crop quality and OER.</li>
+                        </ul>
+                        <h4 class="font-semibold text-lg mt-4 mb-2">Recommendations</h4>
+                        <p class="text-gray-700">Continue carrying out tests to estimate potential OER from different suppliers (e.g., EFB to FFB ratio, Undiluted Crude Oil Content Test).</p>
+                    </div>
+                </details>
+                <!-- Sterilization -->
+                <details>
+                    <summary>Sterilization Station <span class="page-ref">(p. 15-21)</span></summary>
+                    <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Observations</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                             <li>Triple peak sterilization cycle is practiced, with actual time (81-90 mins) often exceeding set time (83 mins), indicating steam shortage.</li>
+                             <li>1st and 2nd peak blowoffs are very short.</li>
+                             <li>Holding time during 3rd peak is short and sometimes fails to maintain 40 psi.</li>
+                             <li>Back pressure receiver pressure is fluctuating and drops very low during steam charging.</li>
+                        </ul>
+                        <h4 class="font-semibold text-lg mt-4 mb-2">Recommendations</h4>
+                         <p class="text-gray-700">With adequate steam, blowoff pressure should be lower to expel more air. Ensure sufficient steam penetration and fruit conditioning. Check the setting of the back pressure regulating valve and boiler efficiency.</p>
+                    </div>
+                </details>
+                <!-- Cages -->
+                <details>
+                    <summary>Cages & Throughput <span class="page-ref">(p. 21)</span></summary>
+                    <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Key Improvement</h4>
+                        <p class="text-gray-700">The addition of 8 new cages (total 18 operational, 3 spare) has significantly smoothed operations. This allows for better sequencing, quick charging, and achieving a sterilization capacity above 40 mt/hr. This is a commendable improvement from the previous setup.</p>
+                    </div>
+                </details>
+                 <!-- Thresher Station -->
+                <details>
+                    <summary>Tipper, Hopper & Thresher Station <span class="page-ref">(p. 22-23)</span></summary>
+                     <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Observations</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                            <li>Auto Feeder speed is too fast and operates intermittently, leading to periods of an empty thresher drum followed by overloading.</li>
+                            <li>This inconsistent feeding results in poor stripping efficiency and high loose fruit carryover.</li>
+                            <li>The new Double Deck Bunch Crusher has improved inner layer fruitlet recovery.</li>
+                            <li>However, an opening allows some EFB to bypass the crusher, and a missing retarding plate allows hard bunches to be expelled without crushing.</li>
+                        </ul>
+                        <h4 class="font-semibold text-lg mt-4 mb-2">Recommendations</h4>
+                        <p class="text-gray-700">Slow down the Auto Feeder speed for consistent feeding. Modify the Bunch Crusher to close the bypass opening and add a retarding plate. Consider installing hard bunch recycling conveyors.</p>
+                    </div>
+                </details>
+                <!-- Boiler & Engine Room -->
+                 <details>
+                    <summary>Boiler & Engine Room <span class="page-ref">(p. 25-29)</span></summary>
+                     <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Observations</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                             <li>Furnace draft has dropped to zero, with low draft at the furnace outlet, indicating possible flue gas passage blockage.</li>
+                             <li>The 1200kw Dresser Rand Turbine's exhaust steam is insufficient for process needs at lower loads (e.g., 735kw).</li>
+                             <li>This leads to low back pressure, which is a likely cause of poor sterilization, especially during startup.</li>
+                             <li>Dependency on TNB power has successfully declined due to improved turbine performance.</li>
+                        </ul>
+                        <h4 class="font-semibold text-lg mt-4 mb-2">Recommendations</h4>
+                        <p class="text-gray-700">Inspect boiler furnace for clogged passages during shutdown. Ensure the back pressure makeup valve is functioning correctly to supplement steam for processing. Continue monitoring turbine steam consumption to balance power generation and process steam requirements.</p>
+                    </div>
+                </details>
+                 <!-- Clarification Station -->
+                <details>
+                    <summary>Clarification Station <span class="page-ref">(p. 30-34)</span></summary>
+                     <div class="bg-white">
+                        <h4 class="font-semibold text-lg mb-2">Observations</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-700">
+                             <li>A new Rectangular Clarifier Tank has been commissioned and is operational.</li>
+                             <li>A high dilution approach is being used, reportedly achieving low oil content (<4%) in the underflow.</li>
+                             <li>Balance water supply to the Alfa Laval 710 Separator is excessive, increasing the total volume of sludge.</li>
+                             <li>The three A/L 410 Separators lack balance water sight glasses for proper control.</li>
+                        </ul>
+                        <h4 class="font-semibold text-lg mt-4 mb-2">Recommendations</h4>
+                        <p class="text-gray-700">Quantify the absolute oil loss with the new high-dilution system to validate its efficiency. Throttle and fine-tune the balance water supply to the 710 separator. Install balance water sight glasses on the 410 separators.</p>
+                    </div>
+                </details>
+            </div>
+        </main>
+    </div>
+
+<script>
+    // --- DATA ---
+    const ffbData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: '2025',
+            data: [15988, 14365, 15551, 12684, 18059, 19030],
+            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+            borderColor: 'rgba(37, 99, 235, 1)',
+            borderWidth: 2,
+            tension: 0.1
+        }, {
+            label: '2024',
+            data: [16738, 15988, 12763, 12217, 13745, 15911],
+            backgroundColor: 'rgba(156, 163, 175, 0.6)',
+            borderColor: 'rgba(156, 163, 175, 1)',
+            borderWidth: 2,
+            tension: 0.1
+        }]
+    };
+
+    const ffbGradingData = {
+        labels: ['May 2024', 'Jun 2025'],
+        datasets: [{
+            label: '% Under-ripe',
+            data: [9, 17],
+            backgroundColor: 'rgba(239, 68, 68, 0.6)',
+            borderColor: 'rgba(239, 68, 68, 1)',
+            yAxisID: 'y',
+        }, {
+            label: '% Outside Suppliers',
+            data: [36, 43],
+            backgroundColor: 'rgba(249, 115, 22, 0.6)',
+            borderColor: 'rgba(249, 115, 22, 1)',
+            yAxisID: 'y',
+        }]
+    };
+
+    const oerData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'BS Mill',
+            data: [19.21, 18.10, 18.73, 18.67, 19.16, 19.01],
+            borderColor: 'rgba(37, 99, 235, 1)',
+            fill: false,
+            tension: 0.1
+        }, {
+            label: 'Pahang State',
+            data: [19.53, 19.57, 19.25, 19.01, 19.46, 19.33],
+            borderColor: 'rgba(22, 163, 74, 1)',
+            fill: false,
+            tension: 0.1
+        }, {
+            label: 'Peninsula Malaysia',
+            data: [19.64, 19.53, 19.29, 19.12, 19.48, 19.53],
+            borderColor: 'rgba(249, 115, 22, 1)',
+            fill: false,
+            tension: 0.1
+        }]
+    };
+
+    const kerData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'BS Mill',
+            data: [5.05, 4.88, 4.89, 4.79, 5.12, 5.09],
+            borderColor: 'rgba(37, 99, 235, 1)',
+            fill: false,
+            tension: 0.1
+        }, {
+            label: 'Pahang State',
+            data: [4.81, 4.78, 4.75, 4.69, 4.84, 4.82],
+            borderColor: 'rgba(22, 163, 74, 1)',
+            fill: false,
+            tension: 0.1
+        }, {
+            label: 'Peninsula Malaysia',
+            data: [5.05, 5.03, 4.99, 4.93, 5.06, 5.04],
+            borderColor: 'rgba(249, 115, 22, 1)',
+            fill: false,
+            tension: 0.1
+        }]
+    };
+
+    const serData = {
+        labels: ['Jan-Jun Average'],
+        datasets: [{
+            label: '2024',
+            data: [0.56],
+            backgroundColor: 'rgba(156, 163, 175, 0.6)',
+        }, {
+            label: '2025',
+            data: [1.58],
+            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+        }]
+    };
+
+    const oilLossesData = {
+        labels: ['Press Fibre', 'EFB Fibre', 'Nuts', 'Raw Eff', 'Dec Solid'],
+        datasets: [{
+            label: 'FY 24/25 Actual',
+            data: [0.51, 0.27, 0.08, 0.37, 0.12],
+            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+        }, {
+            label: 'Limit',
+            data: [0.5, 0.2, 0.06, 0.4, 0.08],
+            backgroundColor: 'rgba(239, 68, 68, 0.6)',
+        }]
+    };
+    
+    const kernelLossesData = {
+        labels: ['Fruit in EFB', 'USB', 'Cyclone Fibre', 'Hydrocyclone', 'LTDS'],
+        datasets: [{
+            label: 'FY 24/25 Actual',
+            data: [0.01, 0.01, 0.08, 0.03, 0.05],
+            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+        }, {
+            label: 'Limit',
+            data: [0.01, 0.02, 0.20, 0.06, 0.05],
+            backgroundColor: 'rgba(239, 68, 68, 0.6)',
+        }]
+    };
+
+    const throughputBreakdownData = {
+        labels: ['Throughput (mt/hr)', 'Breakdown (hrs)'],
+        datasets: [{
+            label: 'FY 23/24',
+            data: [34.48, 49],
+            backgroundColor: 'rgba(156, 163, 175, 0.6)',
+        }, {
+            label: 'FY 24/25',
+            data: [34.53, 70],
+            backgroundColor: 'rgba(37, 99, 235, 0.6)',
+        }]
+    };
+
+    const rainfallOerData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Rainfall 2025 (mm)',
+            type: 'bar',
+            data: [129, 26, 151, 107, 233, 128],
+            backgroundColor: 'rgba(59, 130, 246, 0.5)',
+            yAxisID: 'y1',
+        }, {
+            label: 'OER 2025 (%)',
+            type: 'line',
+            data: [19.21, 18.10, 18.73, 18.67, 19.16, 19.01],
+            borderColor: 'rgba(234, 88, 12, 1)',
+            yAxisID: 'y',
+            tension: 0.1
+        }]
+    };
+
+    // --- CHART RENDERING ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const printButton = document.getElementById('printButton');
+        
+        // Tab switching logic
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const tab = button.dataset.tab;
+                
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tab) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Print functionality
+        printButton.addEventListener('click', () => {
+            const allDetails = document.querySelectorAll('#stations details');
+            // Store original open state
+            const openStates = [];
+            allDetails.forEach((detail, index) => {
+                openStates[index] = detail.open;
+                detail.open = true;
+            });
+            
+            // Allow time for browser to render opened details
+            setTimeout(() => {
+                window.print();
+                
+                // Restore original state after print dialog is closed
+                 allDetails.forEach((detail, index) => {
+                    detail.open = openStates[index];
+                });
+            }, 250);
+        });
+
+        // Initialize charts
+        renderChart('ffbProcessedChart', 'line', ffbData);
+        renderBarChart('ffbGradingChart', ffbGradingData, {
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'Percentage (%)' } }
+            }
+        });
+        renderChart('oerComparisonChart', 'line', oerData, {
+             scales: { y: { beginAtZero: false, title: { display: true, text: 'OER (%)' } } }
+        });
+        renderChart('kerComparisonChart', 'line', kerData, {
+             scales: { y: { beginAtZero: false, title: { display: true, text: 'KER (%)' } } }
+        });
+        renderBarChart('serComparisonChart', serData);
+        renderBarChart('oilLossesChart', oilLossesData);
+        renderBarChart('kernelLossesChart', kernelLossesData);
+        renderBarChart('throughputBreakdownChart', throughputBreakdownData);
+        renderChart('rainfallOerChart', 'bar', rainfallOerData, {
+            scales: {
+                y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'OER (%)' } },
+                y1: { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, title: { display: true, text: 'Rainfall (mm)' } }
+            }
+        });
+
+    });
+
+    function renderChart(canvasId, type, data, options = {}) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        new Chart(ctx, { type, data, options });
+    }
+
+    function renderBarChart(canvasId, data, extraOptions = {}) {
+        const defaultOptions = {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+        const options = { ...defaultOptions, ...extraOptions };
+        renderChart(canvasId, 'bar', data, options);
+    }
+
+</script>
+</body>
+</html>
+
