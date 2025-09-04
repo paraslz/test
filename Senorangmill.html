@@ -140,7 +140,8 @@
 
         <!-- Tabs Navigation -->
         <nav class="flex flex-wrap justify-center border-b border-gray-300 mb-8" id="tab-nav">
-            <button class="tab-button active text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="overview">Dashboard</button>
+            <button class="tab-button active text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="summary">Executive Summary</button>
+            <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="overview">Dashboard</button>
             <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="extraction">Extraction Rates</button>
             <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="quality">Quality & Losses</button>
             <button class="tab-button text-sm md:text-base py-3 px-4 md:px-6 border-b-2 border-transparent" data-tab="operations">Operations</button>
@@ -149,8 +150,51 @@
 
         <!-- Tab Content -->
         <main id="tab-container">
+            <!-- Executive Summary -->
+            <div id="summary" class="tab-content active">
+                <div class="bg-white p-6 md:p-8 rounded-lg shadow-md space-y-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-700 mb-4">Executive Summary</h2>
+                        <p class="text-gray-600 leading-relaxed">
+                            This report summarizes the findings from the visit to Bukit Senorang Palm Oil Mill on July 17-18, 2025. The mill has demonstrated strong performance in crop processing and operational uptime. However, key challenges remain in optimizing extraction rates and improving process control in several key stations. Strategic interventions are recommended to address crop quality variations, steam supply inconsistencies, and downstream processing inefficiencies to enhance overall profitability and performance.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Key Achievements -->
+                        <div>
+                            <h3 class="text-xl font-semibold text-green-700 mb-3">Key Achievements</h3>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Increased Throughput:</strong> FFB processed in FY 2024/2025 increased by 13.7% to 182,824 mt, indicating strong sourcing and processing capability.</li>
+                                <li><strong>Operational Stability:</strong> The breakdown rate was maintained at a low 1.32%, well within the 3% industry benchmark, reflecting good maintenance practices.</li>
+                                <li><strong>Enhanced Capacity:</strong> The addition of 8 new FFB cages has significantly improved operational flow at the sterilization station, enabling a throughput of over 40 mt/hr.</li>
+                                <li><strong>Energy Efficiency:</strong> Dependency on TNB power supply has been successfully reduced, thanks to improved performance and servicing of the 1200kw turbine.</li>
+                                <li><strong>Recent OER Improvement:</strong> A positive trend has emerged at the start of the new financial year (FY 25/26), with OER in May and June 2025 showing a notable recovery, reversing the previous year's decline.</li>
+                            </ul>
+                        </div>
+                        <!-- Areas for Improvement -->
+                        <div>
+                             <h3 class="text-xl font-semibold text-red-700 mb-3">Areas for Improvement</h3>
+                             <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li><strong>Sustaining Extraction Rates:</strong> While OER for FY 24/25 (18.52%) declined, the recent positive trend in May and June must be sustained to ensure a full performance recovery for the new financial year.</li>
+                                <li><strong>Crop Quality:</strong> A significant increase in under-ripe crops (from ~9% to ~17%) and reliance on a larger pool of external suppliers necessitates stricter grading and quality control.</li>
+                                <li><strong>Process Control:</strong> Inefficiencies were noted at critical stations:
+                                    <ul class="list-['-_'] list-inside ml-4 mt-1">
+                                        <li><strong>Sterilization:</strong> Steam shortages and fluctuating back pressure are compromising cycle efficiency.</li>
+                                        <li><strong>Threshing:</strong> Inconsistent and rapid feeding leads to poor stripping and high carryover.</li>
+                                        <li><strong>Clarification:</strong> Excessive water usage in separators increases effluent volume and risks oil loss.</li>
+                                    </ul>
+                                </li>
+                             </ul>
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </div>
+
             <!-- Overview / Dashboard -->
-            <div id="overview" class="tab-content active">
+            <div id="overview" class="tab-content">
                 <h2 class="text-2xl font-bold text-gray-700 mb-6">Performance Dashboard</h2>
                 
                 <!-- KPIs -->
@@ -594,4 +638,6 @@
 </script>
 </body>
 </html>
+
+
 
