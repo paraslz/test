@@ -34,7 +34,7 @@
         <!-- Header -->
         <header class="mb-6">
             <h1 class="text-3xl font-bold text-gray-900">Estate Performance Portal</h1>
-            <p class="text-lg text-gray-600">Interactive summary for July - September 2025</p>
+            <p class="text-lg text-gray-600">Interactive summary for July - October 2025</p>
         </header>
 
         <!-- Tab Navigation -->
@@ -42,8 +42,9 @@
             <button class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="july-view">July 2025</button>
             <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="august-view">August 2025</button>
             <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="september-view">September 2025</button>
+            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="october-view">October 2025</button>
             <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="trends-view">Group Trends</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="estate-view">Estate Deep Dive</button>
+            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="estate-view">Estate Averages</button>
             <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="analysis-view">Rainfall vs. Outturn</button>
             <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="takeaways-view">Key Takeaways</button>
         </nav>
@@ -61,34 +62,54 @@
             <div id="september-view" class="content-view hidden space-y-6">
                 <!-- This content will be dynamically generated -->
             </div>
+            <div id="october-view" class="content-view hidden space-y-6">
+                <!-- This content will be dynamically generated -->
+                <!-- Warning message for missing data -->
+                <div class="bg-yellow-100 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-md shadow-sm" role="alert">
+                    <p class="font-bold">Data Notice</p>
+                    <p>Complete summary data for SUMOMINI in October was not available and has been omitted from this month's view and group calculations.</p>
+                </div>
+            </div>
 
             <!-- Trends View -->
             <div id="trends-view" class="content-view hidden space-y-6">
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">3-Month Group Performance Trends</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">4-Month Group Performance Trends</h2>
                     <div class="h-96">
                         <canvas id="trends-chart-line"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- NEW VIEW: Estate Deep Dive -->
+            <!-- MODIFIED VIEW: Estate Averages -->
             <div id="estate-view" class="content-view hidden space-y-6">
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Individual Estate 3-Month Trend</h2>
-                    <p class="mb-4 text-gray-600">Select an estate to see its monthly rainfall, outturn, and productivity trends.</p>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Estate Overall Averages (Jul-Oct 2025)</h2>
+                    <p class="mb-4 text-gray-600">This table shows the 4-month average for key metrics for each estate. SUMOMINI's average is based on Jul-Sep data only.</p>
                     
-                    <!-- Dropdown -->
-                    <div class="mb-4 max-w-xs">
-                        <label for="estate-select" class="block text-sm font-medium text-gray-700">Select Estate:</label>
-                        <select id="estate-select" name="estate-select" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
-                            <!-- Options will be populated by JS -->
-                        </select>
-                    </div>
+                    <!-- Table will be injected here by JS -->
+                    <div id="estate-average-table" class="overflow-x-auto mb-6"></div>
 
-                    <!-- Chart -->
-                    <div class="h-96">
-                        <canvas id="estate-chart"></canvas>
+                    <!-- Key Observations -->
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Operational Observations</h2>
+                    <div class="prose prose-sm max-w-none text-gray-700">
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>
+                                <strong>Operational Inefficiency (IMBINIS):</strong> This trend is confirmed. IMBINIS consistently maintains the group's highest worker outturn (avg. 82.5%) but delivers the lowest productivity (avg. 0.65 MT/Manday). High attendance is not translating to output, suggesting chronic over-staffing or poor task allocation.
+                            </li>
+                            <li>
+                                <strong>High Productivity/Low Outturn (BEWANI345):</strong> This estate shows a persistent and unusual trend. It maintained exceptionally high productivity in Oct (2.21 MT/Manday), similar to Sep (2.25), while its outturn remained low (50-55%). This suggests a specialized or smaller workforce is achieving high results, or a potential data reporting issue.
+                            </li>
+                             <li>
+                                <strong>Rainfall Resilience (IMBIO & IMBINIS):</strong> October was very wet for IMBIO and IMBINIS (334.5mm). Both maintained high outturn (73% & 83% respectively), confirming their operational resilience. However, IMBIO's productivity dropped significantly (from 1.06 in Sep to 0.77 in Oct), suggesting the rain impacted work efficiency, if not attendance.
+                            </li>
+                             <li>
+                                <strong>Data Anomaly (SUMOMINI):</strong> The September anomaly (28% outturn, 2.96 productivity) remains a major outlier. Without October's data for comparison, this event should be investigated as a likely data error or a one-off operational change.
+                            </li>
+                            <li>
+                                <strong>Low Performer (OSSIMA):</strong> In October, OSSIMA posted the lowest productivity of the group (0.56 MT/Manday) along with continued low outturn (56%). Its performance has declined since July.
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -97,8 +118,8 @@
             <div id="analysis-view" class="content-view hidden space-y-6">
                 <!-- Group Summary -->
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Group 3-Month Summary</h2>
-                    <p class="mb-4 text-gray-600">This table shows the average rainfall, worker outturn, and productivity across all 6 estates for each month.</p>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Group Monthly Summary</h2>
+                    <p class="mb-4 text-gray-600">This table shows the average rainfall, worker outturn, and productivity across all 6 estates for each month. (*October average excludes SUMOMINI due to missing data).</p>
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -128,6 +149,12 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">58.63 %</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.440</td>
                                 </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">October 2025*</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">236.2 mm</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">66.58 %</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.000</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -135,7 +162,7 @@
 
                 <!-- Rainfall vs Outturn Analysis -->
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall vs. Worker Outturn Relationship (Jul-Sep 2025)</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall vs. Worker Outturn Relationship (Jul-Oct 2025)</h2>
                     <p class="mb-4 text-gray-600">This scatter plot charts each estate's monthly performance. Each dot represents one estate in one month, showing its total monthly rainfall (X-axis) against its average worker outturn (Y-axis).</p>
                     <div class="h-96 mb-4">
                         <canvas id="chart-scatter-rain-outturn"></canvas>
@@ -144,19 +171,16 @@
                     <div class="prose prose-sm max-w-none text-gray-700">
                         <ul class="list-disc pl-5 space-y-2">
                             <li>
-                                The data suggests a **weak to moderate negative correlation**. Generally, estates/months with higher rainfall tend to see lower worker outturn, but the relationship is not perfectly linear.
+                                The addition of October data reinforces the **weak negative correlation**. Very high rainfall (over 300mm) clearly impacts operations, but there is significant variance in outturn at all rainfall levels.
                             </li>
                             <li>
-                                **August Anomaly:** The group had its lowest rainfall in August (106.0mm) but also saw a significant drop in outturn (65.41%) from July. This was driven by BEWANI345 (40.8% outturn) and OSSIMA (54.8% outturn) despite modest rainfall, indicating other operational factors were a stronger driver.
+                                **Rainfall Resilience:** The new October data for IMBIO and IMBINIS (334.5mm rain) shows they maintained strong outturn (73% and 83% respectively), making them outliers in high-rainfall conditions and suggesting good operational resilience.
                             </li>
                             <li>
-                                **Rainfall Threshold:** Most estates with rainfall under 200mm managed to maintain outturn above 50%. However, when rainfall was high (e.g., in September for SUMOMINI, BEWANI345, and OSSIMA), outturn dropped significantly.
+                                **August Anomaly:** The August data (low rain, low outturn) remains the clearest indicator that factors *other than weather* (e.g., operational issues, worker transport, payroll) are a major driver of worker attendance.
                             </li>
                              <li>
-                                **Outlier:** The most extreme rainfall was in July at BEWANI 1&2 (807.9mm). Interestingly, its outturn (68.19%) remained relatively stable and was not the lowest for the quarter.
-                            </li>
-                             <li>
-                                **Conclusion:** While very heavy rain (over 200-250mm) clearly suppresses worker outturn, a lack of rain does not guarantee high outturn. Other factors, possibly operational or related to the productivity anomalies, are also significantly impacting worker attendance.
+                                **Conclusion:** Rainfall is a factor, but it is not the primary driver of outturn. Estates like IMBINIS show that high outturn is possible even with high rain, while estates like BEWANI345 show that low rain doesn't prevent low outturn.
                             </li>
                         </ul>
                     </div>
@@ -166,26 +190,23 @@
             <!-- Key Takeaways View -->
             <div id="takeaways-view" class="content-view hidden space-y-6">
                 <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Takeaways (Jul - Sep 2025)</h2>
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Takeaways (Jul - Oct 2025)</h2>
                     <div class="prose max-w-none text-gray-700">
                         <ul class="list-disc pl-5 space-y-2">
                             <li>
-                                <strong>Production Leaders:</strong> SUMOMINI and IMBIO are the top two producers. SUMOMINI was the clear leader in July (4,010t) and August (4,579t), while IMBIO maintained strong, stable production (averaging 2,724t).
+                                <strong>Production Leaders:</strong> SUMOMINI (based on Jul-Sep) and BEWANI 1&2 (2,583t in Oct) are the top producers. IMBIO's production remains stable but has declined slightly into October.
                             </li>
                             <li>
-                                <strong>September Productivity Surge:</strong> September saw a dramatic productivity spike for SUMOMINI (2.96 MT/Manday) and BEWANI345 (2.25 MT/Manday), far exceeding all other estates and their own previous performance.
+                                <strong>High-Productivity Anomaly (BEWANI345):</strong> This estate's productivity remained exceptionally high in October (2.21 MT/Manday), consistent with September (2.25). This is highly unusual and warrants investigation, as its outturn and total production are comparatively low.
                             </li>
                             <li>
-                                <strong>Productivity vs. Outturn Anomaly:</strong> SUMOMINI's huge productivity in September is directly correlated with a simultaneous crash in worker outturn (from 71% in August to just 28% in September). This suggests that a much smaller workforce (or fewer mandays) achieved high efficiency, or there may be a data reporting anomaly.
+                                <strong>SUMOMINI Data Outlier:</strong> The September data for SUMOMINI (28% outturn, 2.96 productivity) remains the most significant anomaly in the dataset. Without October data to confirm a trend, this should be treated as a probable data error.
                             </li>
                             <li>
-                                <strong>Consistent Laggards:</strong> IMBINIS and BEWANI 1&2 consistently show the lowest productivity (MT/Manday), hovering in the 0.55-0.87 range. Notably, IMBINIS maintains a high worker outturn (avg. 82%), but this doesn't translate to high productivity.
+                                <strong>Operational Deficiency (IMBINIS):</strong> The 4-month trend confirms IMBINIS has an operational issue. It consistently has the *highest* worker outturn (avg. 82.5%) but the *lowest* productivity (avg. 0.65). It has high attendance but low efficiency.
                             </li>
                             <li>
-                                <strong>Outturn Decline:</strong> Worker outturn generally trended down from July to September for most estates, with SUMOMINI, BEWANI345, and OSSIMA seeing the most significant drops.
-                            </li>
-                            <li>
-                                <strong>Weather Factor:</strong> BEWANI 1&2 experienced exceptionally high rainfall in July (808mm), which may have impacted operations, though its production remained stable compared to August.
+                                <strong>Rainfall vs. Productivity:</strong> Heavy rain in October at IMBIO (334.5mm) appears to have impacted productivity (0.77), which fell from 1.06 in September. However, IMBINIS was unaffected by the same rainfall, maintaining its (low) productivity level.
                             </li>
                         </ul>
                     </div>
@@ -233,6 +254,17 @@
                 { name: "BEWANI 1& 2", outturn: 59.38, production: 2173.64, productivity: 0.605, rainfall: 214.0 },
                 { name: "SUMOMINI", outturn: 27.85, production: 3328.22, productivity: 2.957, rainfall: 275.0 }
                 ]
+            },
+            "october": {
+                month: "October 2025",
+                estates: [
+                { name: "IMBIO", outturn: 73.25, production: 2510.4, productivity: 0.768, rainfall: 334.5 },
+                { name: "IMBINIS", outturn: 83.42, production: 1057.42, productivity: 0.722, rainfall: 334.5 },
+                { name: "OSSIMA", outturn: 56.00, production: 1398.98, productivity: 0.558, rainfall: 190.4 },
+                { name: "BEWANI345", outturn: 54.73, production: 1160.96, productivity: 2.214, rainfall: 190.4 },
+                { name: "BEWANI 1& 2", outturn: 65.50, production: 2583.02, productivity: 0.737, rainfall: 131.0 }
+                // SUMOMINI data is missing from the provided summary file snippet
+                ]
             }
         };
     </script>
@@ -252,37 +284,11 @@
                 throw new Error('Data not loaded! The reportData object is missing.');
             }
 
-            // Process data for the estate deep dive
-            const estateData = {};
-            const estateNames = ["IMBIO", "IMBINIS", "OSSIMA", "BEWANI345", "BEWANI 1& 2", "SUMOMINI"];
-            const monthKeys = ["july", "august", "september"];
-
-            estateNames.forEach(name => {
-                estateData[name] = {
-                    rainfall: [],
-                    outturn: [],
-                    productivity: []
-                };
-                monthKeys.forEach(monthKey => {
-                    // Handle potential missing data gracefully
-                    const estateMonthData = reportData[monthKey] ? reportData[monthKey].estates.find(e => e.name === name) : null;
-                    if (estateMonthData) {
-                        estateData[name].rainfall.push(estateMonthData.rainfall);
-                        estateData[name].outturn.push(estateMonthData.outturn);
-                        estateData[name].productivity.push(estateMonthData.productivity);
-                    } else {
-                        console.warn(`Missing data for ${name} in ${monthKey}`);
-                        estateData[name].rainfall.push(null);
-                        estateData[name].outturn.push(null);
-                        estateData[name].productivity.push(null);
-                    }
-                });
-            });
-
             // Initialize monthly views
             createMonthlyView('july');
             createMonthlyView('august');
             createMonthlyView('september');
+            createMonthlyView('october'); // Add October
 
             // Set default view
             updateDashboard('july');
@@ -290,26 +296,9 @@
             // Create the trends and analysis charts
             createTrendChart();
             createScatterChart();
-
-            // Setup Estate Deep Dive
-            const estateSelect = document.getElementById('estate-select');
-            if (estateSelect) {
-                estateNames.forEach(name => {
-                    const option = document.createElement('option');
-                    option.value = name;
-                    option.textContent = name;
-                    estateSelect.appendChild(option);
-                });
-                // Listen for changes
-                estateSelect.addEventListener('change', (e) => {
-                    updateEstateChart(e.target.value, estateData);
-                });
-                // Initialize chart for the first estate
-                if (estateNames.length > 0) {
-                    updateEstateChart(estateNames[0], estateData);
-                }
-            }
-
+            
+            // Create Estate Average Table
+            createEstateAverageTable();
 
             // Setup tab navigation
             const tabButtons = document.querySelectorAll('.tab-btn');
@@ -332,7 +321,8 @@
                     }
 
                     // If it's a monthly view, update the charts
-                    if (viewId === 'july-view' || viewId === 'august-view' || viewId === 'september-view') {
+                    const monthlyViews = ['july-view', 'august-view', 'september-view', 'october-view'];
+                    if (monthlyViews.includes(viewId)) {
                         const monthKey = viewId.split('-')[0];
                         updateDashboard(monthKey);
                     }
@@ -366,7 +356,10 @@
             const kpiAvgOutturn = data.estates.length > 0 ? data.estates.reduce((sum, e) => sum + e.outturn, 0) / data.estates.length : 0;
             const kpiAvgProductivity = data.estates.length > 0 ? data.estates.reduce((sum, e) => sum + e.productivity, 0) / data.estates.length : 0;
 
-            container.innerHTML = `
+            // Find the existing warning if it's the October view
+            const existingWarning = (monthKey === 'october') ? container.innerHTML : '';
+            
+            container.innerHTML = existingWarning + `
                 <!-- KPI Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
                     <div class="bg-white p-5 rounded-lg shadow-md">
@@ -534,12 +527,12 @@
             }
         }
         
-        // Creates the 3-month trend chart
+        // Creates the 4-month trend chart
         function createTrendChart() {
             const ctx = document.getElementById('trends-chart-line');
             if (!ctx) return; // Guard clause
 
-            const labels = ['July 2025', 'August 2025', 'September 2025'];
+            const labels = ['July 2025', 'August 2025', 'September 2025', 'October 2025'];
             
             const totalProduction = Object.values(reportData).map(month => 
                 month.estates.reduce((sum, e) => sum + e.production, 0)
@@ -691,86 +684,75 @@
             });
         }
 
-        // Update Estate Chart
-        function updateEstateChart(estateName, estateData) {
-            const ctx = document.getElementById('estate-chart');
-            if (!ctx || !estateData[estateName]) return; // Guard clauses
+        // NEW function to create the estate average table
+        function createEstateAverageTable() {
+            const container = document.getElementById('estate-average-table');
+            if (!container) return;
 
-            const data = estateData[estateName];
-            const labels = ['July 2025', 'August 2025', 'September 2025'];
+            const estateNames = ["IMBIO", "IMBINIS", "OSSIMA", "BEWANI345", "BEWANI 1& 2", "SUMOMINI"];
+            const monthKeys = ["july", "august", "september", "october"];
+            const averageData = [];
 
-            if (window.charts.estateChart) {
-                window.charts.estateChart.destroy();
-            }
+            estateNames.forEach(name => {
+                let totalRainfall = 0;
+                let totalOutturn = 0;
+                let totalProductivity = 0;
+                let monthCount = 0;
 
-            window.charts.estateChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Rainfall (mm)',
-                            data: data.rainfall,
-                            borderColor: 'rgba(107, 114, 128, 1)',
-                            backgroundColor: 'rgba(107, 114, 128, 0.1)',
-                            fill: false,
-                            tension: 0.1,
-                            yAxisID: 'yRain'
-                        },
-                        {
-                            label: 'Outturn (%)',
-                            data: data.outturn,
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: false,
-                            tension: 0.1,
-                            yAxisID: 'yOutturn'
-                        },
-                         {
-                            label: 'Productivity (MT/Manday)',
-                            data: data.productivity,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: false,
-                            tension: 0.1,
-                            yAxisID: 'yProd'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    scales: {
-                        yRain: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            title: { display: true, text: 'Rainfall (mm)', color: 'rgba(107, 114, 128, 1)' }
-                        },
-                        yOutturn: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: { display: true, text: 'Outturn (%)', color: 'rgba(239, 68, 68, 1)' },
-                            grid: { drawOnChartArea: false },
-                            min: 0,
-                            max: 100
-                        },
-                        yProd: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: { display: true, text: 'Productivity (MT/Manday)', color: 'rgba(16, 185, 129, 1)' },
-                            grid: { drawOnChartArea: false }
-                        }
+                monthKeys.forEach(monthKey => {
+                    const estateMonthData = reportData[monthKey] ? reportData[monthKey].estates.find(e => e.name === name) : null;
+                    if (estateMonthData) {
+                        totalRainfall += estateMonthData.rainfall;
+                        totalOutturn += estateMonthData.outturn;
+                        totalProductivity += estateMonthData.productivity;
+                        monthCount++;
                     }
+                });
+
+                if (monthCount > 0) {
+                    averageData.push({
+                        name: name,
+                        avgRainfall: totalRainfall / monthCount,
+                        avgOutturn: totalOutturn / monthCount,
+                        avgProductivity: totalProductivity / monthCount
+                    });
                 }
             });
+
+            // Build table HTML
+            let tableHtml = `
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estate</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Rainfall</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Outturn</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Productivity</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+            `;
+
+            averageData.forEach((estate, index) => {
+                const rowClass = index % 2 === 0 ? '' : 'bg-gray-50';
+                tableHtml += `
+                    <tr class="${rowClass} hover:bg-gray-100">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${estate.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgRainfall.toFixed(1)} mm</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgOutturn.toFixed(2)} %</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgProductivity.toFixed(3)} MT/Manday</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            container.innerHTML = tableHtml;
         }
+
     </script>
 
 </body>
