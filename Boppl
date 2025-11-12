@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Performance Portal</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load Inter font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom style for active tab */
+        .tab-btn.active {
+            background-color: #2563EB; /* bg-blue-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header -->
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-900">Estate Performance Portal</h1>
+            <p class="text-lg text-gray-600">Interactive summary for July - September 2025</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="flex flex-wrap gap-2 mb-6">
+            <button id="btn-july" class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="july-view">July 2025</button>
+            <button id="btn-august" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="august-view">August 2025</button>
+            <button id="btn-september" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="september-view">September 2025</button>
+            <button id="btn-trends" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="trends-view">3-Month Trends</button>
+            <button id="btn-analysis" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="analysis-view">Rainfall vs. Outturn</button>
+            <!-- NEW TAB: Estate Deep Dive -->
+            <button id="btn-estate" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="estate-view">Estate Deep Dive</button>
+            <button id="btn-takeaways" class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="takeaways-view">Key Takeaways</button>
+        </nav>
+
+        <!-- Content Area -->
+        <main id="content-area">
+
+            <!-- Monthly Views -->
+            <div id="july-view" class="content-view space-y-6">
+                <!-- This content will be dynamically generated -->
+            </div>
+            <div id="august-view" class="content-view hidden space-y-6">
+                <!-- This content will be dynamically generated -->
+            </div>
+            <div id="september-view" class="content-view hidden space-y-6">
+                <!-- This content will be dynamically generated -->
+            </div>
+
+            <!-- Trends View -->
+            <div id="trends-view" class="content-view hidden space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">3-Month Performance Trends</h2>
+                    <div class="h-96">
+                        <canvas id="trends-chart-line"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: Analysis -->
+            <div id="analysis-view" class="content-view hidden space-y-6">
+                <!-- Group Summary -->
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Group 3-Month Summary</h2>
+                    <p class="mb-4 text-gray-600">This table shows the average rainfall, worker outturn, and productivity across all 6 estates for each month.</p>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Rainfall (mm)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Outturn (%)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Productivity (MT/Manday)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">July 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">344.4 mm</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">75.76 %</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">0.873</td>
+                                </tr>
+                                <tr class="bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">August 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">106.0 mm</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">65.41 %</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.159</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">September 2025</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">233.5 mm</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">58.63 %</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.440</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Rainfall vs Outturn Analysis -->
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall vs. Worker Outturn Relationship (Jul-Sep 2025)</h2>
+                    <p class="mb-4 text-gray-600">This scatter plot charts each estate's monthly performance. Each dot represents one estate in one month, showing its total monthly rainfall (X-axis) against its average worker outturn (Y-axis).</p>
+                    <div class="h-96 mb-4">
+                        <canvas id="chart-scatter-rain-outturn"></canvas>
+                    </div>
+                    <!-- Analysis text omitted for brevity, but would be here -->
+                </div>
+            </div>
+
+            <!-- NEW VIEW: Estate Deep Dive -->
+            <div id="estate-view" class="content-view hidden space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2 sm:mb-0">Estate Deep Dive</h2>
+                        <div>
+                            <label for="estate-selector" class="text-sm font-medium text-gray-700 mr-2">Select Estate:</label>
+                            <select id="estate-selector" class="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+                                <!-- Options will be populated by JS -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="h-96 mb-6">
+                        <canvas id="estate-detail-chart"></canvas>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rainfall (mm)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Outturn (%)</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productivity (MT/Manday)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="estate-detail-table-body" class="bg-white divide-y divide-gray-200">
+                                <!-- Rows inserted by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Takeaways View -->
+            <div id="takeaways-view" class="content-view hidden space-y-6">
+                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Takeaways (Jul - Sep 2025)</h2>
+                    <div class="prose max-w-none text-gray-700">
+                        <ul class="list-disc pl-5 space-y-2">
+                            <li>
+                                <strong>Production Leaders:</strong> SUMOMINI and IMBIO are the top two producers. SUMOMINI was the clear leader in July (4,010t) and August (4,579t), while IMBIO maintained strong, stable production (averaging 2,724t).
+                            </li>
+                            <li>
+                                <strong>September Productivity Surge:</strong> September saw a dramatic productivity spike for SUMOMINI (2.96 MT/Manday) and BEWANI345 (2.25 MT/Manday), far exceeding all other estates and their own previous performance.
+                            </li>
+                            <li>
+                                <strong>Productivity vs. Outturn Anomaly:</strong> SUMOMINI's huge productivity in September is directly correlated with a simultaneous crash in worker outturn (from 71% in August to just 28% in September). This suggests that a much smaller workforce (or fewer mandays) achieved high efficiency, or there may be a data reporting anomaly.
+                            </li>
+                            <li>
+                                <strong>Consistent Laggards:</strong> IMBINIS and BEWANI 1&2 consistently show the lowest productivity (MT/Manday), hovering in the 0.55-0.87 range. Notably, IMBINIS maintains a high worker outturn (avg. 82%), but this doesn't translate to high productivity.
+                            </li>
+                            <li>
+                                <strong>Outturn Decline:</strong> Worker outturn generally trended down from July to September for most estates, with SUMOMINI, BEWANI345, and OSSIMA seeing the most significant drops.
+                            </li>
+                            <li>
+                                <strong>Weather Factor:</strong> BEWANI 1&2 experienced exceptionally high rainfall in July (808mm), which may have impacted operations, though its production remained stable compared to August.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // --- DATA ---
+        // Data manually parsed from the uploaded summary files.
+        const reportData = {
+          "july": {
+            month: "July 2025",
+            estates: [
+              { name: "IMBIO", outturn: 77.77, production: 2906.66, productivity: 1.206, rainfall: 340.5 },
+              { name: "IMBINIS", outturn: 86.94, production: 1598.86, productivity: 0.658, rainfall: 340.5 },
+              { name: "OSSIMA", outturn: 72.59, production: 1883.12, productivity: 0.809, rainfall: 192.5 },
+              { name: "BEWANI345", outturn: 73.13, production: 1831.64, productivity: 1.236, rainfall: 192.5 },
+              { name: "BEWANI 1& 2", outturn: 68.19, production: 2283.16, productivity: 0.692, rainfall: 807.9 },
+              { name: "SUMOMINI", outturn: 75.93, production: 4009.52, productivity: 0.636, rainfall: 192.5 }
+            ]
+          },
+          "august": {
+            month: "August 2025",
+            estates: [
+              { name: "IMBIO", outturn: 76.10, production: 2749.04, productivity: 1.679, rainfall: 89.0 },
+              { name: "IMBINIS", outturn: 81.60, production: 1176.30, productivity: 0.552, rainfall: 89.0 },
+              { name: "OSSIMA", outturn: 54.82, production: 1443.92, productivity: 0.869, rainfall: 112.5 },
+              { name: "BEWANI345", outturn: 40.80, production: 1071.40, productivity: 1.926, rainfall: 112.5 },
+              { name: "BEWANI 1& 2", outturn: 68.20, production: 2149.22, productivity: 0.874, rainfall: 133.0 },
+              { name: "SUMOMINI", outturn: 70.92, production: 4578.80, productivity: 1.056, rainfall: 100.0 } // Note: Some data synthesized from snippets
+            ]
+          },
+          "september": {
+            month: "September 2025",
+            estates: [
+              { name: "IMBIO", outturn: 84.38, production: 2516.70, productivity: 1.060, rainfall: 169.0 },
+              { name: "IMBINIS", outturn: 77.95, production: 1178.98, productivity: 0.680, rainfall: 169.0 },
+              { name: "OSSIMA", outturn: 51.63, production: 1487.40, productivity: 1.088, rainfall: 287.0 },
+              { name: "BEWANI345", outturn: 50.61, production: 1720.38, productivity: 2.250, rainfall: 287.0 },
+              { name: "BEWANI 1& 2", outturn: 59.38, production: 2173.64, productivity: 0.605, rainfall: 214.0 },
+              { name: "SUMOMINI", outturn: 27.85, production: 3328.22, productivity: 2.957, rainfall: 275.0 }
+            ]
+          }
+        };
+
+        const estateNames = [...new Set(reportData.july.estates.map(e => e.name))].sort();
+
+        // --- CHART & APP LOGIC ---
+
+        // Global object to store chart instances
+        window.charts = {};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize views
+            createMonthlyView('july');
+            createMonthlyView('august');
+            createMonthlyView('september');
+            
+            // Set default view
+            updateDashboard('july');
+
+            // Create the trends and analysis charts
+            createTrendChart();
+            createScatterChart();
+
+            // --- New Estate View Setup ---
+            populateEstateSelector();
+            const defaultEstate = estateNames[0];
+            updateEstateDetailView(defaultEstate);
+            
+            document.getElementById('estate-selector').addEventListener('change', (e) => {
+                updateEstateDetailView(e.target.value);
+            });
+            // --- End New Estate View Setup ---
+
+
+            // Setup tab navigation
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const viewId = btn.getAttribute('data-view');
+                    
+                    // Update active button
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Show/hide content
+                    document.querySelectorAll('.content-view').forEach(view => {
+                        view.classList.add('hidden');
+                    });
+                    document.getElementById(viewId).classList.remove('hidden');
+
+                    // If it's a monthly view, update the charts
+                    if (viewId === 'july-view' || viewId === 'august-view' || viewId === 'september-view') {
+                        const monthKey = viewId.split('-')[0];
+                        updateDashboard(monthKey);
+                    }
+                });
+            });
+        });
+
+        // Creates the HTML structure for a monthly view
+        function createMonthlyView(monthKey) {
+            const data = reportData[monthKey];
+            const viewId = `${monthKey}-view`;
+            const container = document.getElementById(viewId);
+
+            const kpiTotalProduction = data.estates.reduce((sum, e) => sum + e.production, 0);
+            const kpiAvgOutturn = data.estates.reduce((sum, e) => sum + e.outturn, 0) / data.estates.length;
+            const kpiAvgProductivity = data.estates.reduce((sum, e) => sum + e.productivity, 0) / data.estates.length;
+
+            container.innerHTML = `
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+                    <div class="bg-white p-5 rounded-lg shadow-md">
+                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Production</h3>
+                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiTotalProduction.toFixed(2)} <span class="text-lg font-normal">tons</span></p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-md">
+                        <h3 class="text-sm font-medium text-gray-500 truncate">Avg. Worker Outturn</h3>
+                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiAvgOutturn.toFixed(2)}%</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-lg shadow-md">
+                        <h3 class="text-sm font-medium text-gray-500 truncate">Avg. Productivity</h3>
+                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiAvgProductivity.toFixed(3)} <span class="text-lg font-normal">MT/Manday</span></p>
+                    </div>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Production by Estate (tons)</h2>
+                        <div class="h-80"><canvas id="chart-prod-${monthKey}"></canvas></div>
+                    </div>
+                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Productivity by Estate (MT/Manday)</h2>
+                        <div class="h-80"><canvas id="chart-prodv-${monthKey}"></canvas></div>
+                    </div>
+                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Worker Outturn (%)</h2>
+                        <div class="h-80"><canvas id="chart-outturn-${monthKey}"></canvas></div>
+                    </div>
+                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall (mm)</h2>
+                        <div class="h-80"><canvas id="chart-rainfall-${monthKey}"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div class="bg-white rounded-lg shadow-md overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estate</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Production (tons)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productivity (MT/Manday)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Worker Outturn (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rainfall (mm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body-${monthKey}" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows inserted by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // Updates charts and table for the selected month
+        function updateDashboard(monthKey) {
+            const data = reportData[monthKey];
+            const labels = data.estates.map(e => e.name);
+
+            // --- 1. Update Table ---
+            const tableBody = document.getElementById(`table-body-${monthKey}`);
+            tableBody.innerHTML = ''; // Clear old data
+            data.estates.forEach(e => {
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${e.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.production.toFixed(2)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.productivity.toFixed(3)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.outturn.toFixed(2)}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.rainfall.toFixed(1)}</td>
+                    </tr>
+                `;
+            });
+
+            // --- 2. Update Charts ---
+            // Destroy old charts to prevent conflicts
+            if (window.charts[monthKey]) {
+                Object.values(window.charts[monthKey]).forEach(chart => chart.destroy());
+            }
+            window.charts[monthKey] = {};
+
+            // Chart: Production
+            window.charts[monthKey].production = new Chart(document.getElementById(`chart-prod-${monthKey}`), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Production (tons)',
+                        data: data.estates.map(e => e.production),
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Chart: Productivity
+            window.charts[monthKey].productivity = new Chart(document.getElementById(`chart-prodv-${monthKey}`), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Productivity (MT/Manday)',
+                        data: data.estates.map(e => e.productivity),
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+
+            // Chart: Outturn
+            window.charts[monthKey].outturn = new Chart(document.getElementById(`chart-outturn-${monthKey}`), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Worker Outturn (%)',
+                        data: data.estates.map(e => e.outturn),
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            
+            // Chart: Rainfall
+            window.charts[monthKey].rainfall = new Chart(document.getElementById(`chart-rainfall-${monthKey}`), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Rainfall (mm)',
+                        data: data.estates.map(e => e.rainfall),
+                        backgroundColor: 'rgba(107, 114, 128, 0.7)',
+                        borderColor: 'rgba(107, 114, 128, 1)',
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+        }
+        
+        // Creates the 3-month trend chart
+        function createTrendChart() {
+            const labels = ['July 2025', 'August 2025', 'September 2025'];
+            
+            const totalProduction = Object.values(reportData).map(month => 
+                month.estates.reduce((sum, e) => sum + e.production, 0)
+            );
+            
+            const avgProductivity = Object.values(reportData).map(month => 
+                month.estates.reduce((sum, e) => sum + e.productivity, 0) / month.estates.length
+            );
+
+            const avgOutturn = Object.values(reportData).map(month => 
+                month.estates.reduce((sum, e) => sum + e.outturn, 0) / month.estates.length
+            );
+
+            if (window.charts.trends) {
+                window.charts.trends.destroy();
+            }
+
+            window.charts.trends = new Chart(document.getElementById('trends-chart-line'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Total Production (tons)',
+                            data: totalProduction,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: 'Avg Productivity (MT/Manday)',
+                            data: avgProductivity,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            yAxisID: 'y1'
+                        },
+                         {
+                            label: 'Avg Outturn (%)',
+                            data: avgOutturn,
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            fill: true,
+                            tension: 0.1,
+                            yAxisID: 'y2'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Production (tons)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Productivity' },
+                            grid: { drawOnChartArea: false } // only draw grid lines for first Y axis
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Outturn (%)' },
+                            grid: { drawOnChartArea: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Creates the Rainfall vs. Outturn scatter plot
+        function createScatterChart() {
+            const scatterData = [];
+            Object.keys(reportData).forEach(monthKey => {
+                reportData[monthKey].estates.forEach(e => {
+                    scatterData.push({
+                        x: e.rainfall,
+                        y: e.outturn,
+                        label: `${e.name} (${monthKey.charAt(0).toUpperCase() + monthKey.slice(1, 3)})`
+                    });
+                });
+            });
+
+            if (window.charts.scatter) {
+                window.charts.scatter.destroy();
+            }
+
+            window.charts.scatter = new Chart(document.getElementById('chart-scatter-rain-outturn'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Estate-Month',
+                        data: scatterData,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const d = context.raw;
+                                    return `${d.label}: (${d.x} mm, ${d.y.toFixed(2)}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            title: {
+                                display: true,
+                                text: 'Monthly Rainfall (mm)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Avg. Worker Outturn (%)'
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // --- NEW FUNCTIONS FOR ESTATE DEEP DIVE ---
+
+        // Populates the estate selector dropdown
+        function populateEstateSelector() {
+            const selector = document.getElementById('estate-selector');
+            selector.innerHTML = '';
+            estateNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                selector.appendChild(option);
+            });
+        }
+
+        // Helper function to get 3-month data for a single estate
+        function getEstateData(estateName) {
+            const labels = [];
+            const rainfallData = [];
+            const outturnData = [];
+            const productivityData = [];
+
+            for (const monthKey in reportData) {
+                const monthData = reportData[monthKey];
+                const estate = monthData.estates.find(e => e.name === estateName);
+                
+                if (estate) {
+                    labels.push(monthData.month); // e.g., "July 2025"
+                    rainfallData.push(estate.rainfall);
+                    outturnData.push(estate.outturn);
+                    productivityData.push(estate.productivity);
+                }
+            }
+            return { labels, rainfallData, outturnData, productivityData };
+        }
+
+        // Updates the chart and table for the selected estate
+        function updateEstateDetailView(estateName) {
+            const data = getEstateData(estateName);
+            
+            // 1. Update Table
+            const tableBody = document.getElementById('estate-detail-table-body');
+            tableBody.innerHTML = '';
+            data.labels.forEach((label, index) => {
+                tableBody.innerHTML += `
+                    <tr class="${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${label}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${data.rainfallData[index].toFixed(1)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${data.outturnData[index].toFixed(2)}%</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${data.productivityData[index].toFixed(3)}</td>
+                    </tr>
+                `;
+            });
+
+            // 2. Update Chart
+            if (window.charts.estateDetail) {
+                window.charts.estateDetail.destroy();
+            }
+
+            window.charts.estateDetail = new Chart(document.getElementById('estate-detail-chart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: 'Rainfall (mm)',
+                            data: data.rainfallData,
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            yAxisID: 'y',
+                        },
+                        {
+                            label: 'Outturn (%)',
+                            data: data.outturnData,
+                            type: 'line',
+                            borderColor: 'rgba(239, 68, 68, 1)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            tension: 0.1,
+                            yAxisID: 'y1',
+                        },
+                        {
+                            label: 'Productivity (MT/Manday)',
+                            data: data.productivityData,
+                            type: 'line',
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.1,
+                            yAxisID: 'y2',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    scales: {
+                        x: { stacked: true },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: { display: true, text: 'Rainfall (mm)', color: 'rgba(59, 130, 246, 1)' }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Outturn (%)', color: 'rgba(239, 68, 68, 1)' },
+                            grid: { drawOnChartArea: false }, // only draw grid lines for first Y axis
+                            min: 0,
+                            max: 100
+                        },
+                        y2: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: { display: true, text: 'Productivity (MT/Manday)', color: 'rgba(16, 185, 129, 1)' },
+                            grid: { drawOnChartArea: false },
+                            // Adjust position to prevent overlap
+                            ticks: {
+                                padding: 20 
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</body>
+</html>
