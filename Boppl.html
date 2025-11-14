@@ -3,757 +3,458 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estate Performance Portal</title>
+    <title>2025 Appraisal Summary</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Load Inter font -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+    <!-- Set Inter font -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom style for active tab */
-        .tab-btn.active {
-            background-color: #2563EB; /* bg-blue-600 */
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        }
-        .tab-btn {
-            transition: all 0.3s ease;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     </style>
 </head>
-<body class="bg-gray-100">
-
-    <div class="container max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
-        <!-- Header -->
-        <header class="mb-6">
-            <h1 class="text-3xl font-bold text-gray-900">Estate Performance Portal</h1>
-            <p class="text-lg text-gray-600">Interactive summary for July - October 2025</p>
+<body class="bg-gray-100 p-6 md:p-10">
+    <div class="max-w-7xl mx-auto">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">BOP Group 2025 Appraisal Summary</h1>
+            <p class="text-xl text-gray-600">A high-level dashboard of departmental performance and financial impact.</p>
         </header>
 
-        <!-- Tab Navigation -->
-        <nav class="flex flex-wrap gap-2 mb-6">
-            <button class="tab-btn active text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="july-view">July 2025</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="august-view">August 2025</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="september-view">September 2025</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="october-view">October 2025</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="trends-view">Group Trends</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="estate-view">Estate Averages</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="analysis-view">Rainfall vs. Outturn</button>
-            <button class="tab-btn text-sm sm:text-base font-medium py-2 px-4 rounded-lg bg-white text-gray-700 hover:bg-gray-50 shadow-sm" data-view="takeaways-view">Key Takeaways</button>
-        </nav>
+        <!-- Main Content -->
+        <main class="space-y-10">
 
-        <!-- Content Area -->
-        <main id="content-area">
-
-            <!-- Monthly Views -->
-            <div id="july-view" class="content-view space-y-6">
-                <!-- This content will be dynamically generated -->
-            </div>
-            <div id="august-view" class="content-view hidden space-y-6">
-                <!-- This content will be dynamically generated -->
-            </div>
-            <div id="september-view" class="content-view hidden space-y-6">
-                <!-- This content will be dynamically generated -->
-            </div>
-            <div id="october-view" class="content-view hidden space-y-6">
-                <!-- This content will be dynamically generated -->
-                <!-- Warning message for missing data -->
-                <div class="bg-yellow-100 border-l-4 border-yellow-400 text-yellow-700 p-4 rounded-md shadow-sm" role="alert">
-                    <p class="font-bold">Data Notice</p>
-                    <p>Complete summary data for SUMOMINI in October was not available and has been omitted from this month's view and group calculations.</p>
-                </div>
-            </div>
-
-            <!-- Trends View -->
-            <div id="trends-view" class="content-view hidden space-y-6">
-                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">4-Month Group Performance Trends</h2>
-                    <div class="h-96">
-                        <canvas id="trends-chart-line"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MODIFIED VIEW: Estate Averages -->
-            <div id="estate-view" class="content-view hidden space-y-6">
-                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Estate Overall Averages (Jul-Oct 2025)</h2>
-                    <p class="mb-4 text-gray-600">This table shows the 4-month average for key metrics for each estate. SUMOMINI's average is based on Jul-Sep data only.</p>
+            <!-- Company: BEWANI OIL PALM PLANTATIONS LIMITED -->
+            <section>
+                <h2 class="text-3xl font-semibold text-gray-800 border-b-2 border-indigo-600 pb-2 mb-6">
+                    Bewani Oil Palm Plantations Limited
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     
-                    <!-- Table will be injected here by JS -->
-                    <div id="estate-average-table" class="overflow-x-auto mb-6"></div>
+                    <!-- Department Card: Finance -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">Finance Division (Treasury & Accounts)</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">8</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-green-600 text-base">A+</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">2</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">1</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 50,370.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 2,450.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 52,820.00</span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Key Observations -->
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Operational Observations</h2>
-                    <div class="prose prose-sm max-w-none text-gray-700">
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li>
-                                <strong>Operational Inefficiency (IMBINIS):</strong> This trend is confirmed. IMBINIS consistently maintains the group's highest worker outturn (avg. 82.5%) but delivers the lowest productivity (avg. 0.65 MT/Manday). High attendance is not translating to output, suggesting chronic over-staffing or poor task allocation.
-                            </li>
-                            <li>
-                                <strong>High Productivity/Low Outturn (BEWANI345):</strong> This estate shows a persistent and unusual trend. It maintained exceptionally high productivity in Oct (2.21 MT/Manday), similar to Sep (2.25), while its outturn remained low (50-55%). This suggests a specialized or smaller workforce is achieving high results, or a potential data reporting issue.
-                            </li>
-                             <li>
-                                <strong>Rainfall Resilience (IMBIO & IMBINIS):</strong> October was very wet for IMBIO and IMBINIS (334.5mm). Both maintained high outturn (73% & 83% respectively), confirming their operational resilience. However, IMBIO's productivity dropped significantly (from 1.06 in Sep to 0.77 in Oct), suggesting the rain impacted work efficiency, if not attendance.
-                            </li>
-                             <li>
-                                <strong>Data Anomaly (SUMOMINI):</strong> The September anomaly (28% outturn, 2.96 productivity) remains a major outlier. Without October's data for comparison, this event should be investigated as a likely data error or a one-off operational change.
-                            </li>
-                            <li>
-                                <strong>Low Performer (OSSIMA):</strong> In October, OSSIMA posted the lowest productivity of the group (0.56 MT/Manday) along with continued low outturn (56%). Its performance has declined since July.
-                            </li>
-                        </ul>
+                    <!-- Department Card: HR & Admin -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">HR & Admin Department</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">11</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Dismissals:</span>
+                                <span class="font-semibold text-red-600">1</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 45,002.96</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 2,045.48</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 47,048.44</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- VIEW: Analysis -->
-            <div id="analysis-view" class="content-view hidden space-y-6">
-                <!-- Group Summary -->
-                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Group Monthly Summary</h2>
-                    <p class="mb-4 text-gray-600">This table shows the average rainfall, worker outturn, and productivity across all 6 estates for each month. (*October average excludes SUMOMINI due to missing data).</p>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Month</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Rainfall (mm)</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Outturn (%)</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Group Productivity (MT/Manday)</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">July 2025</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">344.4 mm</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">75.76 %</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">0.873</td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">August 2025</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">106.0 mm</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">65.41 %</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.159</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">September 2025</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">233.5 mm</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">58.63 %</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.440</td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">October 2025*</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">236.2 mm</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">66.58 %</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">1.000</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <!-- Department Card: Internal Audit & Project Monitoring -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">Internal Audit & Project Monitoring</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">4</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">1</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">0</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 24,100.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 1,100.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 25,200.00</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <!-- Rainfall vs Outturn Analysis -->
-                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall vs. Worker Outturn Relationship (Jul-Oct 2025)</h2>
-                    <p class="mb-4 text-gray-600">This scatter plot charts each estate's monthly performance. Each dot represents one estate in one month, showing its total monthly rainfall (X-axis) against its average worker outturn (Y-axis).</p>
-                    <div class="h-96 mb-4">
-                        <canvas id="chart-scatter-rain-outturn"></canvas>
+                    <!-- Department Card: Operations (Tech, Workshop, Infra) -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">Operations Division (Tech, Workshop, Infra)</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">38</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">2</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">0</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 127,214.26</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 11,579.81</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 138,794.07</span>
+                            </div>
+                        </div>
                     </div>
-                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Analysis</h3>
-                    <div class="prose prose-sm max-w-none text-gray-700">
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li>
-                                The addition of October data reinforces the **weak negative correlation**. Very high rainfall (over 300mm) clearly impacts operations, but there is significant variance in outturn at all rainfall levels.
-                            </li>
-                            <li>
-                                **Rainfall Resilience:** The new October data for IMBIO and IMBINIS (334.5mm rain) shows they maintained strong outturn (73% and 83% respectively), making them outliers in high-rainfall conditions and suggesting good operational resilience.
-                            </li>
-                            <li>
-                                **August Anomaly:** The August data (low rain, low outturn) remains the clearest indicator that factors *other than weather* (e.g., operational issues, worker transport, payroll) are a major driver of worker attendance.
-                            </li>
-                             <li>
-                                **Conclusion:** Rainfall is a factor, but it is not the primary driver of outturn. Estates like IMBINIS show that high outturn is possible even with high rain, while estates like BEWANI345 show that low rain doesn't prevent low outturn.
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Key Takeaways View -->
-            <div id="takeaways-view" class="content-view hidden space-y-6">
-                <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                    <h2 class="text-xl font-semibold text-gray-800 mb-4">Key Takeaways (Jul - Oct 2025)</h2>
-                    <div class="prose max-w-none text-gray-700">
-                        <ul class="list-disc pl-5 space-y-2">
-                            <li>
-                                <strong>Production Leaders:</strong> SUMOMINI (based on Jul-Sep) and BEWANI 1&2 (2,583t in Oct) are the top producers. IMBIO's production remains stable but has declined slightly into October.
-                            </li>
-                            <li>
-                                <strong>High-Productivity Anomaly (BEWANI345):</strong> This estate's productivity remained exceptionally high in October (2.21 MT/Manday), consistent with September (2.25). This is highly unusual and warrants investigation, as its outturn and total production are comparatively low.
-                            </li>
-                            <li>
-                                <strong>SUMOMINI Data Outlier:</strong> The September data for SUMOMINI (28% outturn, 2.96 productivity) remains the most significant anomaly in the dataset. Without October data to confirm a trend, this should be treated as a probable data error.
-                            </li>
-                            <li>
-                                <strong>Operational Deficiency (IMBINIS):</strong> The 4-month trend confirms IMBINIS has an operational issue. It consistently has the *highest* worker outturn (avg. 82.5%) but the *lowest* productivity (avg. 0.65). It has high attendance but low efficiency.
-                            </li>
-                            <li>
-                                <strong>Rainfall vs. Productivity:</strong> Heavy rain in October at IMBIO (334.5mm) appears to have impacted productivity (0.77), which fell from 1.06 in September. However, IMBINIS was unaffected by the same rainfall, maintaining its (low) productivity level.
-                            </li>
-                        </ul>
+                    <!-- Department Card: Logistics & Procurement -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-indigo-700 mb-4">Logistics & Procurement</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">10</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-green-600 text-base">A+</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">1</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 49,550.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 3,740.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 53,290.00</span>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Department Card: Plantations Division -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg border-2 border-red-500">
+                        <h3 class="text-xl font-bold text-red-700 mb-4">Plantations Division</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">38</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">5</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Dismissals:</span>
+                                <span class="font-semibold text-red-600">7</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 102,565.19</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 7,719.07</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 110,284.26</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
+            </section>
+
+            <!-- Company: VANIMO GREEN PALM OIL MILL LIMITED -->
+            <section>
+                <h2 class="text-3xl font-semibold text-gray-800 border-b-2 border-green-600 pb-2 mb-6">
+                    Vanimo Green Palm Oil Mill Limited
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Department Card: Oil Mill Production -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">Oil Mill Production</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">26</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">1</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">0</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 86,299.63</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 2,906.67</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 89,206.30</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Department Card: Mill Finance -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-green-700 mb-4">Mill Finance</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">1</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-green-600 text-base">A+</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">0</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 6,300.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 400.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 6,700.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Other Companies -->
+            <section>
+                <h2 class="text-3xl font-semibold text-gray-800 border-b-2 border-gray-400 pb-2 mb-6">
+                    Other Group Companies
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Department Card: BS PACIFIC MARITIMES -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">BS Pacific Maritimes S. A.</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">4</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-bold text-blue-600 text-base">A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">1</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">0</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 28,250.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 917.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 29,167.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Department Card: PRIME HORIZON -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-700 mb-4">Prime Horizon Limited</h3>
+                        <!-- Performance Stats -->
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Total Employees:</span>
+                                <span class="font-semibold text-gray-900">2</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Average Rating:</span>
+                                <span class="font-semibold text-gray-900">N/A</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Promotions:</span>
+                                <span class="font-semibold text-blue-600">0</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-600">Warnings/Non-Renewals:</span>
+                                <span class="font-semibold text-yellow-600">1</span>
+                            </div>
+                        </div>
+                        <!-- Salary Stats -->
+                        <div class="border-t pt-3 mt-3 space-y-2 text-sm">
+                            <h4 class="text-sm font-semibold text-gray-500 uppercase mb-2">Payroll Summary (RM)</h4>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Current Monthly Payroll:</span>
+                                <span class="font-semibold text-gray-900">RM 17,422.22</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Proposed Increment:</span>
+                                <span class="font-semibold text-green-600">+ RM 0.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Revised Monthly Payroll:</span>
+                                <span class="font-bold text-indigo-700 text-base">RM 17,422.22</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
 
         </main>
     </div>
-
-    <!-- 
-    Data is now embedded directly into the HTML file.
-    This script block must come BEFORE the main logic script.
-    -->
-    <script>
-        const reportData = {
-            "july": {
-                month: "July 2025",
-                estates: [
-                { name: "IMBIO", outturn: 77.77, production: 2906.66, productivity: 1.206, rainfall: 340.5 },
-                { name: "IMBINIS", outturn: 86.94, production: 1598.86, productivity: 0.658, rainfall: 340.5 },
-                { name: "OSSIMA", outturn: 72.59, production: 1883.12, productivity: 0.809, rainfall: 192.5 },
-                { name: "BEWANI345", outturn: 73.13, production: 1831.64, productivity: 1.236, rainfall: 192.5 },
-                { name: "BEWANI 1& 2", outturn: 68.19, production: 2283.16, productivity: 0.692, rainfall: 807.9 },
-                { name: "SUMOMINI", outturn: 75.93, production: 4009.52, productivity: 0.636, rainfall: 192.5 }
-                ]
-            },
-            "august": {
-                month: "August 2025",
-                estates: [
-                { name: "IMBIO", outturn: 76.10, production: 2749.04, productivity: 1.679, rainfall: 89.0 },
-                { name: "IMBINIS", outturn: 81.60, production: 1176.30, productivity: 0.552, rainfall: 89.0 },
-                { name: "OSSIMA", outturn: 54.82, production: 1443.92, productivity: 0.869, rainfall: 112.5 },
-                { name: "BEWANI345", outturn: 40.80, production: 1071.40, productivity: 1.926, rainfall: 112.5 },
-                { name: "BEWANI 1& 2", outturn: 68.20, production: 2149.22, productivity: 0.874, rainfall: 133.0 },
-                { name: "SUMOMINI", outturn: 70.92, production: 4578.80, productivity: 1.056, rainfall: 100.0 }
-                ]
-            },
-            "september": {
-                month: "September 2025",
-                estates: [
-                { name: "IMBIO", outturn: 84.38, production: 2516.70, productivity: 1.060, rainfall: 169.0 },
-                { name: "IMBINIS", outturn: 77.95, production: 1178.98, productivity: 0.680, rainfall: 169.0 },
-                { name: "OSSIMA", outturn: 51.63, production: 1487.40, productivity: 1.088, rainfall: 287.0 },
-                { name: "BEWANI345", outturn: 50.61, production: 1720.38, productivity: 2.250, rainfall: 287.0 },
-                { name: "BEWANI 1& 2", outturn: 59.38, production: 2173.64, productivity: 0.605, rainfall: 214.0 },
-                { name: "SUMOMINI", outturn: 27.85, production: 3328.22, productivity: 2.957, rainfall: 275.0 }
-                ]
-            },
-            "october": {
-                month: "October 2025",
-                estates: [
-                { name: "IMBIO", outturn: 73.25, production: 2510.4, productivity: 0.768, rainfall: 334.5 },
-                { name: "IMBINIS", outturn: 83.42, production: 1057.42, productivity: 0.722, rainfall: 334.5 },
-                { name: "OSSIMA", outturn: 56.00, production: 1398.98, productivity: 0.558, rainfall: 190.4 },
-                { name: "BEWANI345", outturn: 54.73, production: 1160.96, productivity: 2.214, rainfall: 190.4 },
-                { name: "BEWANI 1& 2", outturn: 65.50, production: 2583.02, productivity: 0.737, rainfall: 131.0 }
-                // SUMOMINI data is missing from the provided summary file snippet
-                ]
-            }
-        };
-    </script>
-    
-    <!-- 
-    The main script logic.
-    Runs after the data script is loaded and after the DOM is parsed.
-    -->
-    <script>
-        // Global object to store chart instances
-        window.charts = {};
-
-        // Main execution block. This runs after the DOM is parsed and data is loaded.
-        try {
-            // Check if data loaded (basic validation)
-            if (typeof reportData === 'undefined') {
-                throw new Error('Data not loaded! The reportData object is missing.');
-            }
-
-            // Initialize monthly views
-            createMonthlyView('july');
-            createMonthlyView('august');
-            createMonthlyView('september');
-            createMonthlyView('october'); // Add October
-
-            // Set default view
-            updateDashboard('july');
-
-            // Create the trends and analysis charts
-            createTrendChart();
-            createScatterChart();
-            
-            // Create Estate Average Table
-            createEstateAverageTable();
-
-            // Setup tab navigation
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            tabButtons.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const viewId = btn.getAttribute('data-view');
-                    
-                    // Update active button
-                    tabButtons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    // Show/hide content
-                    document.querySelectorAll('.content-view').forEach(view => {
-                        view.classList.add('hidden');
-                    });
-                    
-                    const activeView = document.getElementById(viewId);
-                    if (activeView) {
-                        activeView.classList.remove('hidden');
-                    }
-
-                    // If it's a monthly view, update the charts
-                    const monthlyViews = ['july-view', 'august-view', 'september-view', 'october-view'];
-                    if (monthlyViews.includes(viewId)) {
-                        const monthKey = viewId.split('-')[0];
-                        updateDashboard(monthKey);
-                    }
-                });
-            });
-
-        } catch (error) {
-            console.error(error);
-            // Use a non-blocking way to show the error
-            const header = document.querySelector('header');
-            if (header) {
-                const errorEl = document.createElement('div');
-                errorEl.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4';
-                errorEl.setAttribute('role', 'alert');
-                errorEl.innerHTML = `<strong class="font-bold">Error:</strong> <span class="block sm:inline">${error.message}</span>`;
-                // Insert after header
-                header.parentNode.insertBefore(errorEl, header.nextSibling);
-            }
-        }
-
-
-        // Creates the HTML structure for a monthly view
-        function createMonthlyView(monthKey) {
-            if (!reportData[monthKey]) return; // Guard clause for missing month
-            const data = reportData[monthKey];
-            const viewId = `${monthKey}-view`;
-            const container = document.getElementById(viewId);
-            if (!container) return; // Guard clause
-
-            const kpiTotalProduction = data.estates.reduce((sum, e) => sum + e.production, 0);
-            const kpiAvgOutturn = data.estates.length > 0 ? data.estates.reduce((sum, e) => sum + e.outturn, 0) / data.estates.length : 0;
-            const kpiAvgProductivity = data.estates.length > 0 ? data.estates.reduce((sum, e) => sum + e.productivity, 0) / data.estates.length : 0;
-
-            // Find the existing warning if it's the October view
-            const existingWarning = (monthKey === 'october') ? container.innerHTML : '';
-            
-            container.innerHTML = existingWarning + `
-                <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="bg-white p-5 rounded-lg shadow-md">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Total Production</h3>
-                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiTotalProduction.toFixed(2)} <span class="text-lg font-normal">tons</span></p>
-                    </div>
-                    <div class="bg-white p-5 rounded-lg shadow-md">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Avg. Worker Outturn</h3>
-                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiAvgOutturn.toFixed(2)}%</p>
-                    </div>
-                    <div class="bg-white p-5 rounded-lg shadow-md">
-                        <h3 class="text-sm font-medium text-gray-500 truncate">Avg. Productivity</h3>
-                        <p class="mt-1 text-3xl font-semibold text-gray-900">${kpiAvgProductivity.toFixed(3)} <span class="text-lg font-normal">MT/Manday</span></p>
-                    </div>
-                </div>
-
-                <!-- Charts -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Production by Estate (tons)</h2>
-                        <div class="h-80"><canvas id="chart-prod-${monthKey}"></canvas></div>
-                    </div>
-                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Productivity by Estate (MT/Manday)</h2>
-                        <div class="h-80"><canvas id="chart-prodv-${monthKey}"></canvas></div>
-                    </div>
-                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Worker Outturn (%)</h2>
-                        <div class="h-80"><canvas id="chart-outturn-${monthKey}"></canvas></div>
-                    </div>
-                    <div class="bg-white p-4 sm:p-6 rounded-lg shadow-md">
-                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Rainfall (mm)</h2>
-                        <div class="h-80"><canvas id="chart-rainfall-${monthKey}"></canvas></div>
-                    </div>
-                </div>
-
-                <!-- Data Table -->
-                <div class="bg-white rounded-lg shadow-md overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estate</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Production (tons)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Productivity (MT/Manday)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Worker Outturn (%)</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rainfall (mm)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body-${monthKey}" class="bg-white divide-y divide-gray-200">
-                            <!-- Rows inserted by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            `;
-        }
-
-        // Updates charts and table for the selected month
-        function updateDashboard(monthKey) {
-            if (!reportData[monthKey]) return; // Guard clause
-            const data = reportData[monthKey];
-            const labels = data.estates.map(e => e.name);
-
-            // --- 1. Update Table ---
-            const tableBody = document.getElementById(`table-body-${monthKey}`);
-            if (!tableBody) return; // Guard clause
-            
-            tableBody.innerHTML = ''; // Clear old data
-            data.estates.forEach(e => {
-                tableBody.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${e.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.production.toFixed(2)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.productivity.toFixed(3)}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.outturn.toFixed(2)}%</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${e.rainfall.toFixed(1)}</td>
-                    </tr>
-                `;
-            });
-
-            // --- 2. Update Charts ---
-            // Destroy old charts to prevent conflicts
-            if (window.charts[monthKey]) {
-                Object.values(window.charts[monthKey]).forEach(chart => chart.destroy());
-            }
-            window.charts[monthKey] = {};
-
-            // Chart: Production
-            const prodCtx = document.getElementById(`chart-prod-${monthKey}`);
-            if (prodCtx) {
-                window.charts[monthKey].production = new Chart(prodCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Production (tons)',
-                            data: data.estates.map(e => e.production),
-                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
-
-            // Chart: Productivity
-            const prodvCtx = document.getElementById(`chart-prodv-${monthKey}`);
-            if (prodvCtx) {
-                window.charts[monthKey].productivity = new Chart(prodvCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Productivity (MT/Manday)',
-                            data: data.estates.map(e => e.productivity),
-                            backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
-
-            // Chart: Outturn
-            const outturnCtx = document.getElementById(`chart-outturn-${monthKey}`);
-            if (outturnCtx) {
-                window.charts[monthKey].outturn = new Chart(outturnCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Worker Outturn (%)',
-                            data: data.estates.map(e => e.outturn),
-                            backgroundColor: 'rgba(239, 68, 68, 0.7)',
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
-            
-            // Chart: Rainfall
-            const rainfallCtx = document.getElementById(`chart-rainfall-${monthKey}`);
-            if (rainfallCtx) {
-                window.charts[monthKey].rainfall = new Chart(rainfallCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Rainfall (mm)',
-                            data: data.estates.map(e => e.rainfall),
-                            backgroundColor: 'rgba(107, 114, 128, 0.7)',
-                            borderColor: 'rgba(107, 114, 128, 1)',
-                            borderWidth: 1,
-                            borderRadius: 4
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-                });
-            }
-        }
-        
-        // Creates the 4-month trend chart
-        function createTrendChart() {
-            const ctx = document.getElementById('trends-chart-line');
-            if (!ctx) return; // Guard clause
-
-            const labels = ['July 2025', 'August 2025', 'September 2025', 'October 2025'];
-            
-            const totalProduction = Object.values(reportData).map(month => 
-                month.estates.reduce((sum, e) => sum + e.production, 0)
-            );
-            
-            const avgProductivity = Object.values(reportData).map(month => 
-                month.estates.length > 0 ? month.estates.reduce((sum, e) => sum + e.productivity, 0) / month.estates.length : 0
-            );
-
-            const avgOutturn = Object.values(reportData).map(month => 
-                month.estates.length > 0 ? month.estates.reduce((sum, e) => sum + e.outturn, 0) / month.estates.length : 0
-            );
-
-            if (window.charts.trends) {
-                window.charts.trends.destroy();
-            }
-
-            window.charts.trends = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Total Production (tons)',
-                            data: totalProduction,
-                            borderColor: 'rgba(59, 130, 246, 1)',
-                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                            fill: true,
-                            tension: 0.1,
-                            yAxisID: 'y'
-                        },
-                        {
-                            label: 'Avg Productivity (MT/Manday)',
-                            data: avgProductivity,
-                            borderColor: 'rgba(16, 185, 129, 1)',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            fill: true,
-                            tension: 0.1,
-                            yAxisID: 'y1'
-                        },
-                         {
-                            label: 'Avg Outturn (%)',
-                            data: avgOutturn,
-                            borderColor: 'rgba(239, 68, 68, 1)',
-                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                            fill: true,
-                            tension: 0.1,
-                            yAxisID: 'y2'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    scales: {
-                        y: {
-                            type: 'linear',
-                            display: true,
-                            position: 'left',
-                            title: { display: true, text: 'Production (tons)' }
-                        },
-                        y1: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: { display: true, text: 'Productivity' },
-                            grid: { drawOnChartArea: false } // only draw grid lines for first Y axis
-                        },
-                        y2: {
-                            type: 'linear',
-                            display: true,
-                            position: 'right',
-                            title: { display: true, text: 'Outturn (%)' },
-                            grid: { drawOnChartArea: false }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Creates the Rainfall vs. Outturn scatter plot
-        function createScatterChart() {
-            const ctx = document.getElementById('chart-scatter-rain-outturn');
-            if (!ctx) return; // Guard clause
-
-            const scatterData = [];
-            Object.keys(reportData).forEach(monthKey => {
-                if(reportData[monthKey]) {
-                    reportData[monthKey].estates.forEach(e => {
-                        scatterData.push({
-                            x: e.rainfall,
-                            y: e.outturn,
-                            label: `${e.name} (${monthKey.charAt(0).toUpperCase() + monthKey.slice(1, 3)})`
-                        });
-                    });
-                }
-            });
-
-            if (window.charts.scatter) {
-                window.charts.scatter.destroy();
-            }
-
-            window.charts.scatter = new Chart(ctx, {
-                type: 'scatter',
-                data: {
-                    datasets: [{
-                        label: 'Estate-Month',
-                        data: scatterData,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const d = context.raw;
-                                    return `${d.label}: (${d.x} mm, ${d.y.toFixed(2)}%)`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            position: 'bottom',
-                            title: {
-                                display: true,
-                                text: 'Monthly Rainfall (mm)'
-                            }
-                        },
-                        y: {
-                            title: {
-                                display: true,
-                                text: 'Avg. Worker Outturn (%)'
-                            },
-                            min: 0,
-                            max: 100
-                        }
-                    }
-                }
-            });
-        }
-
-        // NEW function to create the estate average table
-        function createEstateAverageTable() {
-            const container = document.getElementById('estate-average-table');
-            if (!container) return;
-
-            const estateNames = ["IMBIO", "IMBINIS", "OSSIMA", "BEWANI345", "BEWANI 1& 2", "SUMOMINI"];
-            const monthKeys = ["july", "august", "september", "october"];
-            const averageData = [];
-
-            estateNames.forEach(name => {
-                let totalRainfall = 0;
-                let totalOutturn = 0;
-                let totalProductivity = 0;
-                let monthCount = 0;
-
-                monthKeys.forEach(monthKey => {
-                    const estateMonthData = reportData[monthKey] ? reportData[monthKey].estates.find(e => e.name === name) : null;
-                    if (estateMonthData) {
-                        totalRainfall += estateMonthData.rainfall;
-                        totalOutturn += estateMonthData.outturn;
-                        totalProductivity += estateMonthData.productivity;
-                        monthCount++;
-                    }
-                });
-
-                if (monthCount > 0) {
-                    averageData.push({
-                        name: name,
-                        avgRainfall: totalRainfall / monthCount,
-                        avgOutturn: totalOutturn / monthCount,
-                        avgProductivity: totalProductivity / monthCount
-                    });
-                }
-            });
-
-            // Build table HTML
-            let tableHtml = `
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estate</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Rainfall</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Outturn</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Avg. Monthly Productivity</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-            `;
-
-            averageData.forEach((estate, index) => {
-                const rowClass = index % 2 === 0 ? '' : 'bg-gray-50';
-                tableHtml += `
-                    <tr class="${rowClass} hover:bg-gray-100">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${estate.name}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgRainfall.toFixed(1)} mm</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgOutturn.toFixed(2)} %</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${estate.avgProductivity.toFixed(3)} MT/Manday</td>
-                    </tr>
-                `;
-            });
-
-            tableHtml += `
-                    </tbody>
-                </table>
-            `;
-
-            container.innerHTML = tableHtml;
-        }
-
-    </script>
-
 </body>
 </html>
