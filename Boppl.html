@@ -6,12 +6,28 @@
     <title>2025 Appraisal Summary</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load D3.js for the chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <!-- Set Inter font -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        /* Style for the chart tooltips */
+        .d3-tooltip {
+            position: absolute;
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            transition: opacity 0.2s;
+            opacity: 0;
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-6 md:p-10">
@@ -21,7 +37,28 @@
             <p class="text-xl text-gray-600">A high-level dashboard of departmental performance and financial impact.</p>
         </header>
 
-        <!-- Main Content -->
+        <!-- Chart Section -->
+        <section class="bg-white p-6 rounded-xl shadow-lg mb-10">
+            <h2 class="text-3xl font-semibold text-gray-800 pb-2 mb-4">
+                Total Monthly Payroll Contribution by Department
+            </h2>
+            <div class="text-gray-600 mb-4">
+                This chart shows the proportion of the group's total current monthly payroll (RM 537,074.26) allocated to each department.
+            </div>
+            <!-- Container for chart and legend -->
+            <div class="flex flex-col lg:flex-row items-center justify-center gap-6">
+                <!-- Pie Chart SVG -->
+                <div id="payroll-chart" class="flex-shrink-0"></div>
+                <!-- Legend -->
+                <div id="payroll-legend" class="flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-3">
+                    <!-- Legend items will be injected here by D3 -->
+                </div>
+            </div>
+            <!-- Tooltip -->
+            <div id="tooltip" class="d3-tooltip"></div>
+        </section>
+
+        <!-- Main Content: Department Cards -->
         <main class="space-y-10">
 
             <!-- Company: BEWANI OIL PALM PLANTATIONS LIMITED -->
@@ -65,6 +102,10 @@
                                 <span class="font-semibold text-green-600">+ RM 2,450.00</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">4.86%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 52,820.00</span>
                             </div>
@@ -103,6 +144,10 @@
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Proposed Increment:</span>
                                 <span class="font-semibold text-green-600">+ RM 2,045.48</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">4.55%</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
@@ -145,6 +190,10 @@
                                 <span class="font-semibold text-green-600">+ RM 1,100.00</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">4.56%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 25,200.00</span>
                             </div>
@@ -183,6 +232,10 @@
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Proposed Increment:</span>
                                 <span class="font-semibold text-green-600">+ RM 11,579.81</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">9.10%</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
@@ -225,6 +278,10 @@
                                 <span class="font-semibold text-green-600">+ RM 3,740.00</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">7.55%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 53,290.00</span>
                             </div>
@@ -263,6 +320,10 @@
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Proposed Increment:</span>
                                 <span class="font-semibold text-green-600">+ RM 7,719.07</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">7.53%</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
@@ -315,6 +376,10 @@
                                 <span class="font-semibold text-green-600">+ RM 2,906.67</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">3.37%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 89,206.30</span>
                             </div>
@@ -353,6 +418,10 @@
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Proposed Increment:</span>
                                 <span class="font-semibold text-green-600">+ RM 400.00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">6.35%</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
@@ -405,6 +474,10 @@
                                 <span class="font-semibold text-green-600">+ RM 917.00</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">3.25%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 29,167.00</span>
                             </div>
@@ -445,6 +518,10 @@
                                 <span class="font-semibold text-green-600">+ RM 0.00</span>
                             </div>
                             <div class="flex justify-between">
+                                <span class="text-gray-600">Total % Increment:</span>
+                                <span class="font-bold text-green-600 text-base">0.00%</span>
+                            </div>
+                            <div class="flex justify-between">
                                 <span class="text-gray-600">Revised Monthly Payroll:</span>
                                 <span class="font-bold text-indigo-700 text-base">RM 17,422.22</span>
                             </div>
@@ -456,5 +533,123 @@
 
         </main>
     </div>
+
+    <!-- D3.js Script for Pie Chart -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data for the pie chart
+            const payrollData = [
+                { label: 'BOPPL Ops', value: 127214.26, percent: 23.69 },
+                { label: 'BOPPL Plantations', value: 102565.19, percent: 19.09 },
+                { label: 'VGPMOL Mill', value: 86299.63, percent: 16.07 },
+                { label: 'BOPPL Finance', value: 50370.00, percent: 9.38 },
+                { label: 'BOPPL Logistics', value: 49550.00, percent: 9.23 },
+                { label: 'BOPPL HR', value: 45002.96, percent: 8.38 },
+                { label: 'BS Pacific', value: 28250.00, percent: 5.26 },
+                { label: 'BOPPL Audit', value: 24100.00, percent: 4.49 },
+                { label: 'Prime Horizon', value: 17422.22, percent: 3.24 },
+                { label: 'VGPMOL Finance', value: 6300.00, percent: 1.17 }
+            ];
+
+            // Chart dimensions
+            const width = 400;
+            const height = 400;
+            const radius = Math.min(width, height) / 2 - 10;
+
+            // Select the SVG container
+            const svg = d3.select("#payroll-chart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", `translate(${width / 2}, ${height / 2})`);
+
+            // Color scale
+            const color = d3.scaleOrdinal()
+                .domain(payrollData.map(d => d.label))
+                .range(d3.schemeTableau10); // A good color scheme
+
+            // Pie generator
+            const pie = d3.pie()
+                .value(d => d.value)
+                .sort(null); // Use the order from the data array
+
+            // Arc generator
+            const arc = d3.arc()
+                .innerRadius(0)
+                .outerRadius(radius);
+            
+            // Arc generator for labels
+            const labelArc = d3.arc()
+                .innerRadius(radius * 0.7)
+                .outerRadius(radius * 0.7);
+
+            // Tooltip
+            const tooltip = d3.select("#tooltip");
+            const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'MYR' });
+
+            // Create pie slices
+            const arcs = svg.selectAll("path")
+                .data(pie(payrollData))
+                .enter()
+                .append("path")
+                .attr("d", arc)
+                .attr("fill", d => color(d.data.label))
+                .attr("stroke", "white")
+                .style("stroke-width", "2px")
+                .on("mouseover", (event, d) => {
+                    tooltip.style("opacity", 1)
+                           .html(`
+                                <strong>${d.data.label}</strong><br>
+                                ${formatter.format(d.data.value)}<br>
+                                ${d.data.percent.toFixed(2)}%
+                           `);
+                })
+                .on("mousemove", (event) => {
+                    tooltip.style("left", (event.pageX + 15) + "px")
+                           .style("top", (event.pageY - 28) + "px");
+                })
+                .on("mouseout", () => {
+                    tooltip.style("opacity", 0);
+                });
+
+            // Add labels (percentages)
+            svg.selectAll("text")
+                .data(pie(payrollData))
+                .enter()
+                .append("text")
+                .attr("transform", d => `translate(${labelArc.centroid(d)})`)
+                .attr("dy", "0.35em")
+                .attr("text-anchor", "middle")
+                .style("font-size", "12px")
+                .style("font-weight", "600")
+                .style("fill", "white")
+                .each(function(d) {
+                    // Only show label if percent is large enough
+                    if (d.data.percent > 3) {
+                        d3.select(this).text(`${d.data.percent.toFixed(1)}%`);
+                    }
+                });
+
+            // Create Legend
+            const legend = d3.select("#payroll-legend");
+
+            payrollData.forEach(item => {
+                const legendItem = legend.append("div")
+                    .attr("class", "flex items-center text-sm");
+
+                legendItem.append("div")
+                    .style("width", "16px")
+                    .style("height", "16px")
+                    .style("background-color", color(item.label))
+                    .attr("class", "rounded-sm mr-2 flex-shrink-0");
+
+                legendItem.append("span")
+                    .text(`${item.label} (${item.percent.toFixed(1)}%)`)
+                    .attr("class", "text-gray-700");
+            });
+        });
+    </script>
+
 </body>
 </html>
