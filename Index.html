@@ -1,355 +1,297 @@
-import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  AlertCircle, 
-  CheckCircle2, 
-  Settings2, 
-  Droplets, 
-  BarChart3, 
-  DollarSign, 
-  Wind, 
-  Hammer, 
-  Gauge, 
-  Info, 
-  ChevronRight, 
-  ShieldAlert, 
-  Zap, 
-  Factory, 
-  Clock,
-  Wrench
-} from 'lucide-react';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mill Portal - Performance Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React and ReactDOM CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel CDN for JSX transformation in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .animate-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 selection:bg-blue-100 selection:text-blue-900">
+    <div id="root"></div>
 
-/**
- * Mill Portal - Group Engineering Command Center
- * Prepared for Netlify/GitHub Deployment
- */
-const App = () => {
-  const [activeView, setActiveView] = useState('dashboard');
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-  const millData = {
-    name: "Sdn Bhd Palm Oil Mill",
-    capacity: "60 mt/hr",
-    status: "Operational",
-    lastAudit: "Sept 3, 2025",
-    groupRank: 1,
-    kpis: [
-      { label: "OER", value: "19.11%", target: "19.47%", trend: "up", status: "warning" },
-      { label: "KER", value: "4.58%", target: "5.00%", trend: "up", status: "warning" },
-      { label: "Direct Cost", value: "RM 40.60", target: "RM 45.00", trend: "down", status: "success" },
-      { label: "Breakdowns", value: "63.5h", target: "<100h", trend: "down", status: "success" },
-      { label: "Throughput", value: "55.0 mt/h", target: "60.0 mt/h", trend: "up", status: "neutral" },
-    ]
-  };
+        // Custom Icon Component to handle Lucide in browser-Babel
+        const Icon = ({ name, className = "w-5 h-5" }) => {
+            useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
+            }, [name]);
+            return <i data-lucide={name} className={className}></i>;
+        };
 
-  const stationHealth = [
-    { 
-      name: "Sterilization (CS)", 
-      health: 65, 
-      issues: ["Swing flabs jammed", "Steam < 100°C", "Leveller setting low"],
-      action: "Install Return CFB Conveyor"
-    },
-    { 
-      name: "Boiler House", 
-      health: 45, 
-      issues: ["75% EFB Fibre loading", "Tube nest fouling", "Sonic soot blowers choked"],
-      action: "Reduce EFB ratio to 30%"
-    },
-    { 
-      name: "Pressing Station", 
-      health: 85, 
-      issues: ["Worm screw wear", "Sand abrasion"],
-      action: "Upgrade Ramp sand removal"
-    },
-    { 
-      name: "Nut Recovery", 
-      health: 70, 
-      issues: ["23.3% Kernel breakage", "Nut silo corrosion"],
-      action: "Adjust Ripple Mill rotor gap"
-    }
-  ];
+        const App = () => {
+            const millData = {
+                name: "Sdn Bhd Palm Oil Mill",
+                capacity: "60 mt/hr",
+                status: "Operational",
+                lastAudit: "Sept 3, 2025",
+                groupRank: 1,
+                kpis: [
+                    { label: "OER", value: "19.11%", target: "19.47%", trend: "up", status: "warning", icon: "droplets" },
+                    { label: "KER", value: "4.58%", target: "5.00%", trend: "up", status: "warning", icon: "settings-2" },
+                    { label: "Direct Cost", value: "RM 40.60", target: "RM 45.00", trend: "down", status: "success", icon: "dollar-sign" },
+                    { label: "Breakdowns", value: "63.5h", target: "<100h", trend: "down", status: "success", icon: "clock" },
+                    { label: "Throughput", value: "55.0 mt/h", target: "60.0 mt/h", trend: "up", status: "neutral", icon: "activity" },
+                ]
+            };
 
-  const LossAnalysis = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-gray-900 font-bold flex items-center">
-            <Droplets className="w-5 h-5 mr-2 text-blue-600" />
-            OER Recovery Opportunity
-          </h3>
-          <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Target: +0.62% Gain</span>
-        </div>
-        <div className="space-y-6">
-          {[
-            { label: "EFB Liquor Loss", value: "8.13%", impact: "+0.50%", color: "bg-red-500", detail: "Critical: High oil in aqueous phase" },
-            { label: "Decanter Cake", value: "3.16%", impact: "+0.12%", color: "bg-orange-500", detail: "Check decanter scroll wear" },
-            { label: "Press Fibre", value: "7.22%", impact: "Within Limit", color: "bg-green-500", detail: "Optimal pressing performance" },
-            { label: "Sterilizer Condensate", value: "14.0%", impact: "Recycled", color: "bg-blue-500", detail: "Standard CS recycling profile" },
-          ].map((item, i) => (
-            <div key={i}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-700 font-medium">{item.label}</span>
-                <span className="text-gray-900 font-mono font-bold">{item.value}</span>
-              </div>
-              <div className="flex justify-between text-[10px] mb-2 text-gray-400">
-                <span>{item.detail}</span>
-                <span className="font-bold text-gray-600">Impact: {item.impact}</span>
-              </div>
-              <div className="h-2 bg-gray-100 rounded-full">
-                <div className={`${item.color} h-full rounded-full transition-all duration-1000`} style={{ width: item.value.includes('%') ? item.value : '40%' }}></div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-          <p className="text-blue-900 text-xs leading-relaxed">
-            <Zap className="w-4 h-4 inline mr-2 mb-1 text-blue-600" />
-            <strong>Advisor Insight:</strong> Completing the Long Fibre Press installation recovers the 8.13% liquor loss. This bridges 50% of the gap to the State Average.
-          </p>
-        </div>
-      </div>
+            const stationHealth = [
+                { name: "Sterilization (CS)", health: 65, issues: ["Swing flabs jammed", "Steam < 100°C"], action: "Install Return CFB Conveyor" },
+                { name: "Boiler House", health: 45, issues: ["75% EFB Fibre loading", "Tube nest fouling"], action: "Reduce EFB ratio to 30%" },
+                { name: "Pressing Station", health: 85, issues: ["Worm screw wear", "Sand abrasion"], action: "Upgrade Ramp sand removal" },
+                { name: "Nut Recovery", health: 70, issues: ["23.3% Kernel breakage", "Nut silo corrosion"], action: "Adjust Ripple Mill rotor gap" }
+            ];
 
-      <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-        <h3 className="text-gray-900 font-bold mb-4 flex items-center">
-          <DollarSign className="w-5 h-5 mr-2 text-green-600" />
-          Direct Cost Benchmarking (RM/mt)
-        </h3>
-        <div className="flex items-end justify-between h-48 px-4 mt-8">
-          {[40.6, 52.1, 48.3, 61.0, 55.2, 49.8].map((cost, i) => (
-            <div key={i} className="group relative flex flex-col items-center w-8">
-              <div 
-                className={`w-full rounded-t-md transition-all duration-500 ${i === 0 ? 'bg-green-500 shadow-sm' : 'bg-gray-200'}`} 
-                style={{ height: `${(cost/70)*100}%` }}
-              ></div>
-              <span className="text-[10px] text-gray-500 mt-2 transform -rotate-45 font-medium">Mill {i === 0 ? 'Your' : i}</span>
-              {i === 0 && <span className="absolute -top-8 text-[10px] font-bold text-green-600">RM{cost}</span>}
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 grid grid-cols-2 gap-4">
-          <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <p className="text-[10px] uppercase font-bold text-gray-400">Labour Efficiency</p>
-            <p className="text-sm font-bold text-gray-800">32 Workers / 60 TPH</p>
-          </div>
-          <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <p className="text-[10px] uppercase font-bold text-gray-400">Group Status</p>
-            <p className="text-sm font-bold text-green-600">Top 5% Efficiency</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+            const LossAnalysis = () => (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+                    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-gray-900 font-bold flex items-center">
+                                <Icon name="droplets" className="w-5 h-5 mr-2 text-blue-600" />
+                                OER Recovery Opportunity
+                            </h3>
+                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Target: +0.62% Gain</span>
+                        </div>
+                        <div className="space-y-6">
+                            {[
+                                { label: "EFB Liquor Loss", value: "8.13%", impact: "+0.50%", color: "bg-red-500", detail: "Critical: High oil in aqueous phase" },
+                                { label: "Decanter Cake", value: "3.16%", impact: "+0.12%", color: "bg-orange-500", detail: "Check decanter scroll wear" },
+                                { label: "Press Fibre", value: "7.22%", impact: "Within Limit", color: "bg-green-500", detail: "Optimal pressing performance" },
+                                { label: "Sterilizer Condensate", value: "14.0%", impact: "Recycled", color: "bg-blue-500", detail: "Standard CS recycling profile" },
+                            ].map((item, i) => (
+                                <div key={i}>
+                                    <div className="flex justify-between text-sm mb-1">
+                                        <span className="text-gray-700 font-medium">{item.label}</span>
+                                        <span className="text-gray-900 font-mono font-bold">{item.value}</span>
+                                    </div>
+                                    <div className="flex justify-between text-[10px] mb-2 text-gray-400">
+                                        <span>{item.detail}</span>
+                                        <span className="font-bold text-gray-600">Impact: {item.impact}</span>
+                                    </div>
+                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div className={`${item.color} h-full transition-all duration-1000`} style={{ width: item.value }}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start">
+                            <Icon name="zap" className="w-4 h-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
+                            <p className="text-blue-900 text-xs leading-relaxed">
+                                <strong>Advisor Insight:</strong> Completing the Long Fibre Press installation recovers the 8.13% liquor loss. This bridges 50% of the gap to the State Average.
+                            </p>
+                        </div>
+                    </div>
 
-  const ActionPlan = () => (
-    <div className="bg-white border border-gray-200 p-6 rounded-2xl mt-6 shadow-sm">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-gray-900 font-bold flex items-center uppercase tracking-wider text-sm">
-          <Hammer className="w-5 h-5 mr-2 text-orange-600" />
-          Mill Advisor's Key Recommendations
-        </h3>
-        <span className="text-[10px] font-bold text-gray-400">AUDIT REF: 1-2025</span>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[
-          { 
-            icon: Factory, 
-            title: "Boiler Station & Fuel Strategy", 
-            desc: "The current 75% EFB fibre ratio is critical; target must be <30%. This disproportionate mix leads to rapid tube nest fouling and sonic soot blower failure. Immediate action: Manual cleaning of tube nests and strict enforcement of mesocarp fibre blending to restore furnace draft and steam reliability.", 
-            type: "Technical",
-            priority: "High"
-          },
-          { 
-            icon: ShieldAlert, 
-            title: "Sterilization Integrity & Throughput", 
-            desc: "Stop visible steam venting from jammed CS inlet swing flabs and hardened end door seals. Install a Return CFB Conveyor to prevent 'choking' at the conveyor tail end. This mechanical fix eliminates operator hesitation, enabling the mill to maintain its rated 60tph throughput without manual throttling.", 
-            type: "Operational",
-            priority: "Medium"
-          },
-          { 
-            icon: TrendingUp, 
-            title: "Oil Recovery (EFB Liquor Capture)", 
-            desc: "Current EFB liquor oil content of 8.13% is unacceptable. Completing the Long Fibre Press and Bunch Crusher installation is the primary lever for a +0.5% OER gain. Additionally, install inline flowmeters to monitor the liquor-to-FFB ratio for better process consistency.", 
-            type: "Capital",
-            priority: "Critical"
-          },
-          { 
-            icon: Settings2, 
-            title: "Quality Control & Kernel Recovery", 
-            desc: "Adjust Ripple Mill rotor gaps immediately to lower kernel breakage from 23.3% to below 16%. Ensure nut silos remain full to achieve the required 20% moisture for clean shell detachment. Upgrade the sand removal floor with concrete slabs to prevent abrasive wear on press screws.", 
-            type: "Process",
-            priority: "Medium"
-          },
-        ].map((item, i) => (
-          <div key={i} className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all cursor-pointer group">
-            <div className="flex justify-between items-start mb-4">
-              <div className="p-3 bg-white border border-gray-200 rounded-xl group-hover:shadow-md transition-all">
-                <item.icon className="w-6 h-6 text-gray-700" />
-              </div>
-              <div className="flex flex-col items-end">
-                <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase mb-1 ${
-                  item.priority === 'Critical' ? 'bg-red-600 text-white' : 
-                  item.priority === 'High' ? 'bg-orange-500 text-white' : 
-                  'bg-blue-600 text-white'
-                }`}>
-                  {item.priority}
-                </span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase">{item.type}</span>
-              </div>
-            </div>
-            <h4 className="text-gray-900 font-bold text-base mb-3">{item.title}</h4>
-            <p className="text-gray-600 text-xs leading-relaxed mb-4">{item.desc}</p>
-            <div className="flex items-center text-[10px] font-bold text-blue-600 uppercase">
-              View Detailed Technical Specs <ChevronRight className="w-3 h-3 ml-1" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+                    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
+                        <h3 className="text-gray-900 font-bold mb-4 flex items-center">
+                            <Icon name="dollar-sign" className="w-5 h-5 mr-2 text-green-600" />
+                            Direct Cost Benchmarking (RM/mt)
+                        </h3>
+                        <div className="flex items-end justify-between h-48 px-4 mt-8">
+                            {[40.6, 52.1, 48.3, 61.0, 55.2, 49.8].map((cost, i) => (
+                                <div key={i} className="group relative flex flex-col items-center w-8">
+                                    <div 
+                                        className={`w-full rounded-t-md transition-all duration-500 ${i === 0 ? 'bg-green-500 shadow-sm' : 'bg-gray-200'}`} 
+                                        style={{ height: `${(cost/70)*100}%` }}
+                                    ></div>
+                                    <span className="text-[10px] text-gray-500 mt-2 transform -rotate-45 font-medium whitespace-nowrap">Mill {i === 0 ? 'Your' : i}</span>
+                                    {i === 0 && <span className="absolute -top-8 text-[10px] font-bold text-green-600">RM{cost}</span>}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="mt-14 grid grid-cols-2 gap-4">
+                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-center">
+                                <p className="text-[10px] uppercase font-bold text-gray-400">Labour Efficiency</p>
+                                <p className="text-xs font-bold text-gray-800">32 Workers / 60 TPH</p>
+                            </div>
+                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-center">
+                                <p className="text-[10px] uppercase font-bold text-gray-400">Group Status</p>
+                                <p className="text-xs font-bold text-green-600">Top 5% Efficiency</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
 
-  const StationPulse = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
-      {stationHealth.map((station, i) => (
-        <div key={i} className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm">
-          <div className="flex justify-between items-start mb-4">
-            <h4 className="text-gray-500 font-bold text-xs uppercase tracking-tight">{station.name}</h4>
-            <span className={`text-xs font-bold ${station.health < 50 ? 'text-red-600' : 'text-green-600'}`}>
-              {station.health}%
-            </span>
-          </div>
-          <div className="h-1.5 bg-gray-100 rounded-full mb-4">
-            <div 
-              className={`h-full rounded-full ${station.health < 50 ? 'bg-red-500' : station.health < 75 ? 'bg-orange-500' : 'bg-green-500'}`} 
-              style={{ width: `${station.health}%` }}
-            ></div>
-          </div>
-          <div className="space-y-1 mb-4 h-12 overflow-hidden">
-            {station.issues.slice(0, 2).map((issue, idx) => (
-              <div key={idx} className="flex items-center text-[10px] text-gray-500 truncate">
-                <AlertCircle className="w-3 h-3 mr-1 text-gray-400" />
-                {issue}
-              </div>
-            ))}
-          </div>
-          <button className="w-full py-2 bg-gray-900 hover:bg-gray-800 text-white text-[10px] font-bold rounded-lg flex items-center justify-center transition-colors">
-            Fix: {station.action} <ChevronRight className="w-3 h-3 ml-1" />
-          </button>
-        </div>
-      ))}
-    </div>
-  );
+            const ActionPlan = () => (
+                <div className="bg-white border border-gray-200 p-6 rounded-2xl mt-6 shadow-sm mb-10">
+                    <div className="flex items-center justify-between mb-8">
+                        <h3 className="text-gray-900 font-bold flex items-center uppercase tracking-wider text-sm">
+                            <Icon name="hammer" className="w-5 h-5 mr-2 text-orange-600" />
+                            Mill Advisor's Key Recommendations
+                        </h3>
+                        <span className="text-[10px] font-bold text-gray-400">AUDIT REF: 1-2025</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {[
+                            { 
+                                icon: "factory", 
+                                title: "Boiler Station & Fuel Strategy", 
+                                desc: "The current 75% EFB fibre ratio is critical; target must be <30%. This disproportionate mix leads to rapid tube nest fouling and sonic soot blower failure. Immediate action: Manual cleaning of tube nests and strict enforcement of mesocarp fibre blending to restore furnace draft.", 
+                                type: "Technical", priority: "High"
+                            },
+                            { 
+                                icon: "shield-alert", 
+                                title: "Sterilization Integrity & Throughput", 
+                                desc: "Stop visible steam venting from jammed CS inlet swing flabs and hardened seals. Install a Return CFB Conveyor to prevent 'choking' at the conveyor tail end, enabling the mill to maintain its rated 60tph throughput without manual throttling.", 
+                                type: "Operational", priority: "Medium"
+                            },
+                            { 
+                                icon: "trending-up", 
+                                title: "Oil Recovery (EFB Liquor Capture)", 
+                                desc: "Current EFB liquor oil content of 8.13% is unacceptable. Completing the Long Fibre Press installation is the primary lever for a +0.5% OER gain. Install inline flowmeters to monitor the liquor-to-FFB ratio for process consistency.", 
+                                type: "Capital", priority: "Critical"
+                            },
+                            { 
+                                icon: "settings-2", 
+                                title: "Quality Control & Kernel Recovery", 
+                                desc: "Adjust Ripple Mill rotor gaps to lower kernel breakage from 23.3% to below 16%. Ensure nut silos are drying below 20% for clean shell detachment. Upgrade the sand removal floor with concrete slabs to prevent abrasive wear.", 
+                                type: "Process", priority: "Medium"
+                            },
+                        ].map((item, i) => (
+                            <div key={i} className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-green-200 transition-all cursor-pointer group">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="p-3 bg-white border border-gray-200 rounded-xl group-hover:shadow-md transition-all">
+                                        <Icon name={item.icon} className="w-6 h-6 text-gray-700" />
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase mb-1 ${
+                                            item.priority === 'Critical' ? 'bg-red-600 text-white' : 
+                                            item.priority === 'High' ? 'bg-orange-500 text-white' : 
+                                            'bg-blue-600 text-white'
+                                        }`}>{item.priority}</span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase">{item.type}</span>
+                                    </div>
+                                </div>
+                                <h4 className="text-gray-900 font-bold text-base mb-2">{item.title}</h4>
+                                <p className="text-gray-600 text-xs leading-relaxed mb-4">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8 font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 border-b border-gray-200 pb-10">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(34,197,94,0.4)]"></div>
-              <span className="text-gray-500 text-xs font-bold uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">Mill Portal</span>
-            </div>
-            <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-none">
-              MILL <span className="text-green-600">COMMAND</span>
-            </h1>
-            <p className="text-gray-500 text-sm mt-3 font-medium flex items-center">
-              <ShieldAlert className="w-4 h-4 mr-2 text-green-500" />
-              Verified Performance Data for Jan - Aug 2025
-            </p>
-          </div>
-          <div className="flex items-center gap-6">
-            <div className="text-right hidden md:block">
-              <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Group Efficiency Ranking</p>
-              <div className="flex items-baseline justify-end">
-                <span className="text-gray-900 text-4xl font-black">#1</span>
-                <span className="text-xs text-gray-400 font-bold uppercase ml-2">Direct Cost</span>
-              </div>
-            </div>
-            <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-blue-600 hover:shadow-lg transition-all flex items-center shadow-md">
-              <Gauge className="w-5 h-5 mr-3" />
-              Recalibrate Targets
-            </button>
-          </div>
-        </header>
+            const StationPulse = () => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                    {stationHealth.map((station, i) => (
+                        <div key={i} className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm">
+                            <div className="flex justify-between items-start mb-4">
+                                <h4 className="text-gray-500 font-bold text-xs uppercase tracking-tight">{station.name}</h4>
+                                <span className={`text-xs font-bold ${station.health < 50 ? 'text-red-600' : 'text-green-600'}`}>
+                                    {station.health}%
+                                </span>
+                            </div>
+                            <div className="h-1.5 bg-gray-100 rounded-full mb-4">
+                                <div className={`h-full rounded-full ${station.health < 50 ? 'bg-red-500' : station.health < 75 ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: `${station.health}%` }}></div>
+                            </div>
+                            <div className="space-y-1 mb-4 h-12 overflow-hidden">
+                                {station.issues.map((issue, idx) => (
+                                    <div key={idx} className="flex items-center text-[10px] text-gray-500 truncate">
+                                        <Icon name="alert-circle" className="w-3 h-3 mr-1 text-gray-400" />
+                                        {issue}
+                                    </div>
+                                ))}
+                            </div>
+                            <button className="w-full py-2 bg-gray-900 hover:bg-gray-800 text-white text-[10px] font-bold rounded-lg flex items-center justify-center transition-colors">
+                                Fix: {station.action} <Icon name="chevron-right" className="w-3 h-3 ml-1" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            );
 
-        {/* KPI Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-10">
-          {millData.kpis.map((kpi, i) => (
-            <div key={i} className="bg-white border border-gray-200 p-6 rounded-2xl relative overflow-hidden group shadow-sm hover:border-green-300 transition-colors">
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                {kpi.status === 'success' ? <CheckCircle2 className="w-10 h-10 text-green-500" /> : <AlertCircle className="w-10 h-10 text-orange-500" />}
-              </div>
-              <h3 className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">{kpi.label}</h3>
-              <p className="text-3xl font-black text-gray-900">{kpi.value}</p>
-              <div className="flex items-center mt-3">
-                <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${kpi.status === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-orange-50 text-orange-700 border border-orange-100'}`}>
-                  Target: {kpi.target}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
+            return (
+                <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
+                    <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 border-b border-gray-200 pb-10">
+                        <div>
+                            <div className="flex items-center gap-3 mb-3">
+                                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                                <span className="text-gray-500 text-xs font-bold uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">Mill Portal</span>
+                            </div>
+                            <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-none">
+                                MILL <span className="text-green-600">COMMAND</span>
+                            </h1>
+                            <p className="text-gray-500 text-sm mt-3 font-medium flex items-center">
+                                <Icon name="shield-alert" className="w-4 h-4 mr-2 text-green-500" />
+                                Engineering Performance Dashboard Jan-Aug 2025
+                            </p>
+                        </div>
+                        <div className="flex items-center gap-6">
+                            <div className="text-right hidden md:block">
+                                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Group Efficiency Ranking</p>
+                                <div className="flex items-baseline justify-end">
+                                    <span className="text-gray-900 text-4xl font-black">#1</span>
+                                    <span className="text-xs text-gray-400 font-bold uppercase ml-2">Direct Cost</span>
+                                </div>
+                            </div>
+                            <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-blue-600 transition-all flex items-center shadow-md">
+                                <Icon name="gauge" className="w-5 h-5 mr-3" />
+                                Recalibrate Targets
+                            </button>
+                        </div>
+                    </header>
 
-        {/* Navigation / Filter */}
-        <div className="flex space-x-8 border-b border-gray-200 mb-10 overflow-x-auto pb-px">
-          {['dashboard', 'losses', 'tech audit', 'benchmarking'].map((view) => (
-            <button 
-              key={view}
-              onClick={() => setActiveView(view)}
-              className={`pb-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all whitespace-nowrap relative ${
-                activeView === view 
-                  ? 'text-green-600' 
-                  : 'text-gray-400 hover:text-gray-700'
-              }`}
-            >
-              {view}
-              {activeView === view && <div className="absolute bottom-0 left-0 w-full h-1 bg-green-600 rounded-full animate-in fade-in zoom-in"></div>}
-            </button>
-          ))}
-        </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-10">
+                        {millData.kpis.map((kpi, i) => (
+                            <div key={i} className="bg-white border border-gray-200 p-6 rounded-2xl relative overflow-hidden group shadow-sm hover:border-green-300 transition-colors">
+                                <h3 className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">{kpi.label}</h3>
+                                <p className="text-3xl font-black text-gray-900">{kpi.value}</p>
+                                <div className="flex items-center mt-3">
+                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${kpi.status === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-orange-50 text-orange-700 border border-orange-100'}`}>
+                                        Target: {kpi.target}
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
-        {/* Content Area */}
-        <div className="space-y-10 mb-20 animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out">
-          {activeView === 'dashboard' && (
-            <>
-              <LossAnalysis />
-              <StationPulse />
-              <ActionPlan />
-            </>
-          )}
-          {activeView === 'losses' && <LossAnalysis />}
-          {activeView === 'tech audit' && <StationPulse />}
-          {activeView === 'benchmarking' && (
-            <div className="bg-white border border-gray-200 p-20 rounded-3xl text-center shadow-sm">
-              <BarChart3 className="w-16 h-16 text-gray-100 mx-auto mb-6" />
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Benchmarking Module</h3>
-              <p className="text-gray-500 font-medium max-w-md mx-auto">Syncing real-time milling data from Group ERP for 20 mill comparisons...</p>
-            </div>
-          )}
-        </div>
+                    <div className="flex border-b border-gray-200 mb-10 overflow-x-auto">
+                        <div className="pb-4 text-[11px] font-bold uppercase tracking-widest text-green-600 relative">
+                            DASHBOARD
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-green-600 rounded-full"></div>
+                        </div>
+                    </div>
 
-        {/* Footer Audit Info */}
-        <footer className="mt-20 border-t border-gray-200 py-10">
-          <div className="flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] gap-6">
-            <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
-              <Wrench className="w-4 h-4 mr-2 text-gray-300" />
-              Engineering Integrity Status: <span className="text-green-600 ml-2">Certified</span>
-            </div>
-            <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
-              <Clock className="w-4 h-4 mr-2 text-gray-300" />
-              Last Data Refresh: {new Date().toLocaleTimeString()}
-            </div>
-            <div className="flex items-center gap-6">
-              <a href="#" className="hover:text-gray-900 transition-colors">Documentation</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">API Sync</a>
-              <span className="text-gray-300 font-normal opacity-50">|</span>
-              <span>Portal v4.2.5</span>
-            </div>
-          </div>
-        </footer>
-      </div>
-    </div>
-  );
-};
+                    <div className="animate-in">
+                        <LossAnalysis />
+                        <StationPulse />
+                        <ActionPlan />
+                    </div>
 
-export default App;
+                    <footer className="mt-20 border-t border-gray-200 py-10 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] gap-6">
+                        <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
+                            <Icon name="wrench" className="w-4 h-4 mr-2 text-gray-300" />
+                            Engineering Status: <span className="text-green-600 ml-2">Certified</span>
+                        </div>
+                        <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
+                            <Icon name="clock" className="w-4 h-4 mr-2 text-gray-300" />
+                            Last Sync: {new Date().toLocaleTimeString()}
+                        </div>
+                        <div>Portal v4.2.5</div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
