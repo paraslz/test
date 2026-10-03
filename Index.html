@@ -1,297 +1,539 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mill Portal - Performance Dashboard</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- React and ReactDOM CDNs -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel CDN for JSX transformation in the browser -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-        body { font-family: 'Inter', sans-serif; }
-        .animate-in { animation: fadeIn 0.6s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-900 selection:bg-blue-100 selection:text-blue-900">
-    <div id="root"></div>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cheekah Kemayan Estate Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: spreadsheet-style control sheet — slicer bar, KPI row, chart grid, ledger tables, integrity log */
+:root{
+  --bg:#f5f7f4; --panel:#ffffff; --line:#dde3dc; --fg:#1b2a22; --muted:#5d6b62;
+  --frond:#1f6b45; --frond-soft:#e3efe7; --fruit:#c4561f; --fruit-soft:#f8e6dc;
+  --good:#2e7d4f; --warn:#b7791f; --bad:#b83a2e; --warn-soft:#fbf1dc; --bad-soft:#f8e1de;
+  --grid:#e8ece7;
+  --f-display:"Barlow Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#111814; --panel:#18221c; --line:#2b3a31; --fg:#e4ece6; --muted:#9aa99f;
+  --frond:#5cc28a; --frond-soft:#1d3327; --fruit:#f08a52; --fruit-soft:#3a2418;
+  --good:#5cc28a; --warn:#e6b04d; --bad:#ef7a6c; --warn-soft:#352a14; --bad-soft:#3a1d1a; --grid:#243029; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111814; --panel:#18221c; --line:#2b3a31; --fg:#e4ece6; --muted:#9aa99f;
+  --frond:#5cc28a; --frond-soft:#1d3327; --fruit:#f08a52; --fruit-soft:#3a2418;
+  --good:#5cc28a; --warn:#e6b04d; --bad:#ef7a6c; --warn-soft:#352a14; --bad-soft:#3a1d1a; --grid:#243029; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:18px}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px;border-bottom:2px solid var(--frond);padding-bottom:12px}
+.eyebrow{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(28px,5vw,40px);line-height:1;margin:4px 0 6px;text-wrap:balance}
+.meta{color:var(--muted);font-size:13px}
+.meta b{color:var(--fg);font-weight:500}
+.slicer{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.slicer span{font-family:var(--f-mono);font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-right:4px}
+.slicer button{font:500 13px var(--f-body);background:var(--panel);color:var(--fg);border:1px solid var(--line);padding:7px 12px;border-radius:4px;cursor:pointer}
+.slicer button[aria-pressed="true"]{background:var(--frond);border-color:var(--frond);color:var(--panel)}
+.slicer button:focus-visible{outline:2px solid var(--fruit);outline-offset:2px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:4px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--s,var(--line))}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-family:var(--f-display);font-size:30px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:15px;color:var(--muted);font-weight:500}
+.kpi .d{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.pill{display:inline-block;font:500 11px var(--f-mono);padding:1px 6px;border-radius:10px;margin-right:4px}
+.pill.good{background:var(--frond-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px;min-width:0;display:grid;gap:8px;align-content:start}
+.card h2{font-family:var(--f-display);font-size:19px;font-weight:600;margin:0;letter-spacing:.01em}
+.card .sub{font-size:12px;color:var(--muted);margin:0}
+.chart{position:relative;height:240px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg)}
+.flags{display:grid;gap:8px}
+.flag{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:10px 12px;border-radius:5px;background:var(--bg);border-left:3px solid var(--warn)}
+.flag.bad{border-left-color:var(--bad)}
+.flag .t{font-weight:600}
+.flag p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.flag .n{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.takeaways{margin:0;padding-left:20px;display:grid;gap:6px}
+.src{font-size:12.5px;color:var(--muted);display:grid;gap:4px}
+.src a{color:var(--frond)}
+.note{font-size:12px;color:var(--muted);margin:0}
+.bxhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+.sel select{font:500 14px var(--f-body);padding:8px 10px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--fg);max-width:100%}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
+.tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:9px 10px;display:grid;gap:2px;position:relative;overflow:hidden}
+.tile::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:var(--s,var(--line))}
+.tile .nm{font-family:var(--f-display);font-size:20px;font-weight:700;line-height:1}
+.tile .ha{font:11px var(--f-mono);color:var(--muted)}
+.tile .yv{font:500 12px var(--f-mono)}
+.tile[aria-selected="true"]{border-color:var(--frond);background:var(--frond-soft);box-shadow:inset 0 0 0 1px var(--frond)}
+.tile:focus-visible{outline:2px solid var(--fruit);outline-offset:2px}
+.bpanel{border-top:1px solid var(--line);padding-top:12px;display:grid;gap:14px}
+.bp-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 14px}
+.bp-top h3{font-family:var(--f-display);font-size:30px;font-weight:700;margin:0;line-height:1}
+.status{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:10px;background:var(--frond-soft);color:var(--frond)}
+.status.rp{background:var(--fruit-soft);color:var(--fruit)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.fact{background:var(--bg);border-radius:5px;padding:8px 10px}
+.fact .k{font-size:11.5px;color:var(--muted)}
+.fact .v{font-family:var(--f-display);font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.bcols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px}
+.bsec{display:grid;gap:6px;min-width:0;align-content:start}
+.bsec h4{font:500 11px var(--f-mono);text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0}
+.obs{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.obs li{display:grid;grid-template-columns:auto 1fr;gap:8px;font-size:13.5px;align-items:baseline}
+.tag{font:500 10.5px var(--f-mono);padding:1px 6px;border-radius:3px;white-space:nowrap;background:var(--frond-soft);color:var(--frond)}
+.tag.ag{background:var(--fruit-soft);color:var(--fruit)}
+.tag.fl{background:var(--bad-soft);color:var(--bad)}
+.act{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.act li{font-size:13.5px;padding-left:18px;position:relative}
+.act li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:8px;border:1.5px solid var(--fruit);border-radius:2px}
+.subs{display:flex;flex-wrap:wrap;gap:6px}
+.subs span{font:12px var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:3px 7px}
+.askblock{justify-self:start;font:500 13px var(--f-body);background:var(--panel);color:var(--frond);border:1px solid var(--frond);border-radius:5px;padding:7px 12px;cursor:pointer}
+tr.clk{cursor:pointer} tr.clk:hover td{background:var(--frond-soft)}
+.ask{border-color:var(--frond);border-width:1.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{font:13px var(--f-body);background:var(--frond-soft);color:var(--frond);border:1px solid transparent;border-radius:14px;padding:5px 11px;cursor:pointer;text-align:left}
+.chips button:hover{border-color:var(--frond)}
+.log{display:grid;gap:8px;max-height:420px;overflow-y:auto}
+.log:empty{display:none}
+.msg{padding:9px 12px;border-radius:6px;font-size:14px;white-space:pre-wrap;min-width:0;overflow-wrap:anywhere}
+.msg.q{background:var(--frond);color:var(--panel);justify-self:end;max-width:85%}
+.msg.a{background:var(--bg);border:1px solid var(--line);max-width:100%}
+.msg.a.err{border-color:var(--bad);color:var(--bad)}
+.askrow{display:flex;gap:6px}
+.askrow input{flex:1;min-width:0;font:15px var(--f-body);padding:9px 11px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--fg)}
+.askrow input:focus-visible{outline:2px solid var(--frond);outline-offset:1px}
+.askrow button{font:600 14px var(--f-body);padding:9px 16px;border-radius:5px;border:0;background:var(--frond);color:var(--panel);cursor:pointer}
+.askrow button#stop{background:var(--bad)}
+.askrow button:disabled{opacity:.5;cursor:default}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+<div class="wrap">
+<header>
+  <div>
+    <div class="eyebrow">Prosper · Kosfarm Development Sdn Bhd · PARAS advisory</div>
+    <h1>Ladang Cheekah Kemayan</h1>
+    <div class="meta"><b>1,543.38 ha</b> planted · 1,208.76 ha mature · 334.62 ha immature · 14.70 ha nursery · Mill on estate</div>
+  </div>
+  <div class="slicer" role="group" aria-label="Review period">
+    <span>Period</span>
+    <button id="p0" data-p="0">FY2024</button>
+    <button id="p1" data-p="1">Jan–Nov 2025</button>
+    <button id="p2" data-p="2" aria-pressed="true">Jan–May 2026</button>
+  </div>
+</header>
 
-        // Custom Icon Component to handle Lucide in browser-Babel
-        const Icon = ({ name, className = "w-5 h-5" }) => {
-            useEffect(() => {
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            }, [name]);
-            return <i data-lucide={name} className={className}></i>;
-        };
+<section class="kpis" id="kpis" aria-live="polite"></section>
+<p class="note" id="pnote"></p>
 
-        const App = () => {
-            const millData = {
-                name: "Sdn Bhd Palm Oil Mill",
-                capacity: "60 mt/hr",
-                status: "Operational",
-                lastAudit: "Sept 3, 2025",
-                groupRank: 1,
-                kpis: [
-                    { label: "OER", value: "19.11%", target: "19.47%", trend: "up", status: "warning", icon: "droplets" },
-                    { label: "KER", value: "4.58%", target: "5.00%", trend: "up", status: "warning", icon: "settings-2" },
-                    { label: "Direct Cost", value: "RM 40.60", target: "RM 45.00", trend: "down", status: "success", icon: "dollar-sign" },
-                    { label: "Breakdowns", value: "63.5h", target: "<100h", trend: "down", status: "success", icon: "clock" },
-                    { label: "Throughput", value: "55.0 mt/h", target: "60.0 mt/h", trend: "up", status: "neutral", icon: "activity" },
-                ]
-            };
+<section class="card bx" id="blocks">
+  <div class="bxhead">
+    <div>
+      <h2>Block explorer</h2>
+      <p class="sub">Tap a block, or pick one from the list. Tile colour = Jan–May 2026 yield vs estimate.</p>
+    </div>
+    <label class="sel"><span class="sr">Choose block</span>
+      <select id="blockSel"></select>
+    </label>
+  </div>
+  <div class="tiles" id="tiles" role="listbox" aria-label="Blocks"></div>
+  <div class="bpanel" id="bpanel" aria-live="polite"></div>
+</section>
 
-            const stationHealth = [
-                { name: "Sterilization (CS)", health: 65, issues: ["Swing flabs jammed", "Steam < 100°C"], action: "Install Return CFB Conveyor" },
-                { name: "Boiler House", health: 45, issues: ["75% EFB Fibre loading", "Tube nest fouling"], action: "Reduce EFB ratio to 30%" },
-                { name: "Pressing Station", health: 85, issues: ["Worm screw wear", "Sand abrasion"], action: "Upgrade Ramp sand removal" },
-                { name: "Nut Recovery", health: 70, issues: ["23.3% Kernel breakage", "Nut silo corrosion"], action: "Adjust Ripple Mill rotor gap" }
-            ];
+<section class="card ask" id="ask">
+  <h2>Ask about this estate</h2>
+  <p class="sub">Answers come only from the compiled PARAS reports below, with the report cited. Runs on your own Claude account.</p>
+  <div class="chips" id="chips">
+    <button type="button">How many harvesters in the latest report?</button>
+    <button type="button">What is the 2026 fertiliser programme for P99D?</button>
+    <button type="button">How has manuring progress changed since 2024?</button>
+    <button type="button">Which fields have the worst Ganoderma?</button>
+  </div>
+  <div class="log" id="log" aria-live="polite"></div>
+  <form id="askForm" class="askrow">
+    <label for="q" class="sr">Your question</label>
+    <input id="q" type="text" autocomplete="off" placeholder="e.g. What was the cost of production in 2025?">
+    <button id="send" type="submit">Ask</button>
+    <button id="stop" type="button" hidden>Stop</button>
+  </form>
+  <p class="note" id="askNote"></p>
+</section>
 
-            const LossAnalysis = () => (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-gray-900 font-bold flex items-center">
-                                <Icon name="droplets" className="w-5 h-5 mr-2 text-blue-600" />
-                                OER Recovery Opportunity
-                            </h3>
-                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">Target: +0.62% Gain</span>
-                        </div>
-                        <div className="space-y-6">
-                            {[
-                                { label: "EFB Liquor Loss", value: "8.13%", impact: "+0.50%", color: "bg-red-500", detail: "Critical: High oil in aqueous phase" },
-                                { label: "Decanter Cake", value: "3.16%", impact: "+0.12%", color: "bg-orange-500", detail: "Check decanter scroll wear" },
-                                { label: "Press Fibre", value: "7.22%", impact: "Within Limit", color: "bg-green-500", detail: "Optimal pressing performance" },
-                                { label: "Sterilizer Condensate", value: "14.0%", impact: "Recycled", color: "bg-blue-500", detail: "Standard CS recycling profile" },
-                            ].map((item, i) => (
-                                <div key={i}>
-                                    <div className="flex justify-between text-sm mb-1">
-                                        <span className="text-gray-700 font-medium">{item.label}</span>
-                                        <span className="text-gray-900 font-mono font-bold">{item.value}</span>
-                                    </div>
-                                    <div className="flex justify-between text-[10px] mb-2 text-gray-400">
-                                        <span>{item.detail}</span>
-                                        <span className="font-bold text-gray-600">Impact: {item.impact}</span>
-                                    </div>
-                                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                        <div className={`${item.color} h-full transition-all duration-1000`} style={{ width: item.value }}></div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex items-start">
-                            <Icon name="zap" className="w-4 h-4 mr-2 mt-0.5 text-blue-600 flex-shrink-0" />
-                            <p className="text-blue-900 text-xs leading-relaxed">
-                                <strong>Advisor Insight:</strong> Completing the Long Fibre Press installation recovers the 8.13% liquor loss. This bridges 50% of the gap to the State Average.
-                            </p>
-                        </div>
-                    </div>
+<section class="grid">
+  <div class="card">
+    <h2>FFB yield trend</h2>
+    <p class="sub">mt/ha, full year. 2024 shown as PA figure; Agronomy report states 17.35.</p>
+    <div class="chart"><canvas id="cYield" aria-label="Yield per hectare 2020 to 2025"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Budget vs actual</h2>
+    <p class="sub">FFB mt to date and cost of production RM/mt, by review period</p>
+    <div class="chart"><canvas id="cBudget" aria-label="FFB and cost against budget"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Field yield, Jan–May 2026</h2>
+    <p class="sub">Actual vs estimate, mt/ha. Every mature field is under estimate.</p>
+    <div class="chart"><canvas id="cField" aria-label="Yield by field"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Field programme completion</h2>
+    <p class="sub">% of to-date programme done, by review period</p>
+    <div class="chart"><canvas id="cWork" aria-label="Manuring and weeding completion"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Labour vs requirement</h2>
+    <p class="sub">Headcount as at 31 May 2026 (total 91 vs 97 required)</p>
+    <div class="chart"><canvas id="cLabour" aria-label="Labour by category"></canvas></div>
+  </div>
+  <div class="card">
+    <h2>Rainfall</h2>
+    <p class="sub">Annual mm, 2021–2025. 2026 Jan–May: 560 mm over 49 rain days.</p>
+    <div class="chart"><canvas id="cRain" aria-label="Annual rainfall"></canvas></div>
+  </div>
+</section>
 
-                    <div className="bg-white border border-gray-200 p-6 rounded-2xl shadow-sm">
-                        <h3 className="text-gray-900 font-bold mb-4 flex items-center">
-                            <Icon name="dollar-sign" className="w-5 h-5 mr-2 text-green-600" />
-                            Direct Cost Benchmarking (RM/mt)
-                        </h3>
-                        <div className="flex items-end justify-between h-48 px-4 mt-8">
-                            {[40.6, 52.1, 48.3, 61.0, 55.2, 49.8].map((cost, i) => (
-                                <div key={i} className="group relative flex flex-col items-center w-8">
-                                    <div 
-                                        className={`w-full rounded-t-md transition-all duration-500 ${i === 0 ? 'bg-green-500 shadow-sm' : 'bg-gray-200'}`} 
-                                        style={{ height: `${(cost/70)*100}%` }}
-                                    ></div>
-                                    <span className="text-[10px] text-gray-500 mt-2 transform -rotate-45 font-medium whitespace-nowrap">Mill {i === 0 ? 'Your' : i}</span>
-                                    {i === 0 && <span className="absolute -top-8 text-[10px] font-bold text-green-600">RM{cost}</span>}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="mt-14 grid grid-cols-2 gap-4">
-                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-center">
-                                <p className="text-[10px] uppercase font-bold text-gray-400">Labour Efficiency</p>
-                                <p className="text-xs font-bold text-gray-800">32 Workers / 60 TPH</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100 text-center">
-                                <p className="text-[10px] uppercase font-bold text-gray-400">Group Status</p>
-                                <p className="text-xs font-bold text-green-600">Top 5% Efficiency</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
+<section class="grid">
+  <div class="card">
+    <h2>Field ledger</h2>
+    <p class="sub">Mature blocks. Dead-palm % from the census table in PA 1/2026 (see integrity note 1).</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Field</th><th>Ha</th><th>SPH</th><th>Dead %</th><th>YPH 26</th><th>Est.</th><th>Var.</th><th>t/manday</th></tr></thead>
+      <tbody id="ledger"></tbody>
+    </table></div>
+  </div>
+  <div class="card">
+    <h2>Age profile risk</h2>
+    <p class="sub">From Agronomy Report 1/2026</p>
+    <div class="chart" style="height:200px"><canvas id="cAge" aria-label="Palm age profile"></canvas></div>
+    <p class="note">No palms in the prime 8–19 year group. Next replant: P98C1–3, about 172–183 ha in 2027.</p>
+  </div>
+</section>
 
-            const ActionPlan = () => (
-                <div className="bg-white border border-gray-200 p-6 rounded-2xl mt-6 shadow-sm mb-10">
-                    <div className="flex items-center justify-between mb-8">
-                        <h3 className="text-gray-900 font-bold flex items-center uppercase tracking-wider text-sm">
-                            <Icon name="hammer" className="w-5 h-5 mr-2 text-orange-600" />
-                            Mill Advisor's Key Recommendations
-                        </h3>
-                        <span className="text-[10px] font-bold text-gray-400">AUDIT REF: 1-2025</span>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {[
-                            { 
-                                icon: "factory", 
-                                title: "Boiler Station & Fuel Strategy", 
-                                desc: "The current 75% EFB fibre ratio is critical; target must be <30%. This disproportionate mix leads to rapid tube nest fouling and sonic soot blower failure. Immediate action: Manual cleaning of tube nests and strict enforcement of mesocarp fibre blending to restore furnace draft.", 
-                                type: "Technical", priority: "High"
-                            },
-                            { 
-                                icon: "shield-alert", 
-                                title: "Sterilization Integrity & Throughput", 
-                                desc: "Stop visible steam venting from jammed CS inlet swing flabs and hardened seals. Install a Return CFB Conveyor to prevent 'choking' at the conveyor tail end, enabling the mill to maintain its rated 60tph throughput without manual throttling.", 
-                                type: "Operational", priority: "Medium"
-                            },
-                            { 
-                                icon: "trending-up", 
-                                title: "Oil Recovery (EFB Liquor Capture)", 
-                                desc: "Current EFB liquor oil content of 8.13% is unacceptable. Completing the Long Fibre Press installation is the primary lever for a +0.5% OER gain. Install inline flowmeters to monitor the liquor-to-FFB ratio for process consistency.", 
-                                type: "Capital", priority: "Critical"
-                            },
-                            { 
-                                icon: "settings-2", 
-                                title: "Quality Control & Kernel Recovery", 
-                                desc: "Adjust Ripple Mill rotor gaps to lower kernel breakage from 23.3% to below 16%. Ensure nut silos are drying below 20% for clean shell detachment. Upgrade the sand removal floor with concrete slabs to prevent abrasive wear.", 
-                                type: "Process", priority: "Medium"
-                            },
-                        ].map((item, i) => (
-                            <div key={i} className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-green-200 transition-all cursor-pointer group">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="p-3 bg-white border border-gray-200 rounded-xl group-hover:shadow-md transition-all">
-                                        <Icon name={item.icon} className="w-6 h-6 text-gray-700" />
-                                    </div>
-                                    <div className="flex flex-col items-end">
-                                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-full uppercase mb-1 ${
-                                            item.priority === 'Critical' ? 'bg-red-600 text-white' : 
-                                            item.priority === 'High' ? 'bg-orange-500 text-white' : 
-                                            'bg-blue-600 text-white'
-                                        }`}>{item.priority}</span>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase">{item.type}</span>
-                                    </div>
-                                </div>
-                                <h4 className="text-gray-900 font-bold text-base mb-2">{item.title}</h4>
-                                <p className="text-gray-600 text-xs leading-relaxed mb-4">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
+<section class="card">
+  <h2>Key takeaways</h2>
+  <ol class="takeaways">
+    <li>Crop is tracking 16% under budget in 2026 (6,569 mt vs 7,831 mt to May). FY2025 closed at 15.37 mt/ha, below the PA's 16.00 forecast.</li>
+    <li>Cost per tonne still beats budget (RM266 vs RM286), mainly because manuring, pruning and pest spend are delayed, not because the estate is efficient.</li>
+    <li>Manuring is the recurring weak spot: 72% in 2024, 80% in 2025, 54% of H1 2026. Agronomist calls it a disappointment.</li>
+    <li>Harvesters are 6 short of requirement (49 vs 55). 6 workers absconded in 5 months.</li>
+    <li>62% of the estate is over 20 years old and Ganoderma-hit. Yield is structurally capped until P98C replanting.</li>
+  </ol>
+</section>
 
-            const StationPulse = () => (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-                    {stationHealth.map((station, i) => (
-                        <div key={i} className="bg-white border border-gray-200 p-5 rounded-2xl shadow-sm">
-                            <div className="flex justify-between items-start mb-4">
-                                <h4 className="text-gray-500 font-bold text-xs uppercase tracking-tight">{station.name}</h4>
-                                <span className={`text-xs font-bold ${station.health < 50 ? 'text-red-600' : 'text-green-600'}`}>
-                                    {station.health}%
-                                </span>
-                            </div>
-                            <div className="h-1.5 bg-gray-100 rounded-full mb-4">
-                                <div className={`h-full rounded-full ${station.health < 50 ? 'bg-red-500' : station.health < 75 ? 'bg-orange-500' : 'bg-green-500'}`} style={{ width: `${station.health}%` }}></div>
-                            </div>
-                            <div className="space-y-1 mb-4 h-12 overflow-hidden">
-                                {station.issues.map((issue, idx) => (
-                                    <div key={idx} className="flex items-center text-[10px] text-gray-500 truncate">
-                                        <Icon name="alert-circle" className="w-3 h-3 mr-1 text-gray-400" />
-                                        {issue}
-                                    </div>
-                                ))}
-                            </div>
-                            <button className="w-full py-2 bg-gray-900 hover:bg-gray-800 text-white text-[10px] font-bold rounded-lg flex items-center justify-center transition-colors">
-                                Fix: {station.action} <Icon name="chevron-right" className="w-3 h-3 ml-1" />
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            );
+<section class="card">
+  <h2>Report integrity log</h2>
+  <p class="sub">Discrepancies found while compiling this dashboard. Each needs a PARAS answer before figures are relied on.</p>
+  <div class="flags" id="flags"></div>
+</section>
 
-            return (
-                <div className="min-h-screen p-4 md:p-8 max-w-7xl mx-auto">
-                    <header className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-6 border-b border-gray-200 pb-10">
-                        <div>
-                            <div className="flex items-center gap-3 mb-3">
-                                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                                <span className="text-gray-500 text-xs font-bold uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm">Mill Portal</span>
-                            </div>
-                            <h1 className="text-5xl font-black text-gray-900 tracking-tighter leading-none">
-                                MILL <span className="text-green-600">COMMAND</span>
-                            </h1>
-                            <p className="text-gray-500 text-sm mt-3 font-medium flex items-center">
-                                <Icon name="shield-alert" className="w-4 h-4 mr-2 text-green-500" />
-                                Engineering Performance Dashboard Jan-Aug 2025
-                            </p>
-                        </div>
-                        <div className="flex items-center gap-6">
-                            <div className="text-right hidden md:block">
-                                <p className="text-gray-400 text-[10px] uppercase font-bold tracking-widest mb-1">Group Efficiency Ranking</p>
-                                <div className="flex items-baseline justify-end">
-                                    <span className="text-gray-900 text-4xl font-black">#1</span>
-                                    <span className="text-xs text-gray-400 font-bold uppercase ml-2">Direct Cost</span>
-                                </div>
-                            </div>
-                            <button className="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-blue-600 transition-all flex items-center shadow-md">
-                                <Icon name="gauge" className="w-5 h-5 mr-3" />
-                                Recalibrate Targets
-                            </button>
-                        </div>
-                    </header>
+<section class="card src">
+  <h2>Source reports</h2>
+  <a href="https://drive.google.com/file/d/1GBUk05-jYZ0Q4pvWcQ7NtjmoiUVBysNv/view" target="_blank" rel="noopener">PA Report 1/2026 · visit 24 Jun 2026 · Mohd Sufian</a>
+  <a href="https://drive.google.com/file/d/1FzrHObegP6TWvPGqH4-U01uuiS1WsXcd/view" target="_blank" rel="noopener">Agronomy Report 1/2026 · visit 30 Jul 2026 · Lai Hong Heng</a>
+  <a href="https://drive.google.com/file/d/1TTNwq_IiQJw5qVkIztC03JTmR6UTyGzp/view" target="_blank" rel="noopener">PA Report 2/2025 · visit 24 Dec 2025 · Mohd Sufian</a>
+  <a href="https://drive.google.com/file/d/1Urq0ZpzbyElhykLwdcG1QJTQNnbUKvdJ/view" target="_blank" rel="noopener">PA Report 1/2025 · visit 19 Mar 2025 (FY2024 review) · Adnan Mustafa</a>
+  <span>Not yet compiled: PA 1/2024, 2/2024; Agronomy 1/2024, 2/2024, 1/2025, 2/2025.</span>
+</section>
+</div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-10">
-                        {millData.kpis.map((kpi, i) => (
-                            <div key={i} className="bg-white border border-gray-200 p-6 rounded-2xl relative overflow-hidden group shadow-sm hover:border-green-300 transition-colors">
-                                <h3 className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-2">{kpi.label}</h3>
-                                <p className="text-3xl font-black text-gray-900">{kpi.value}</p>
-                                <div className="flex items-center mt-3">
-                                    <span className={`text-[10px] font-bold px-2 py-1 rounded-lg ${kpi.status === 'success' ? 'bg-green-50 text-green-700 border border-green-100' : 'bg-orange-50 text-orange-700 border border-orange-100'}`}>
-                                        Target: {kpi.target}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const P=[
+ {label:"FY2024",src:"PA 1/2025 · Adnan · accounts to Dec 2024",ffb:21165.61,ffbB:20563.52,yph:17.03,yphB:15.62,cop:229.79,copB:295.40,gc:1250.76,gcB:1570.83,hc:64.53,hcB:64.96,man:72,circ:75,sel:75,wk:80,wkR:106,hv:51},
+ {label:"Jan–Nov 2025",src:"PA 2/2025 · Sufian · costs to Oct 2025",ffb:16445.28,ffbB:18629.50,yph:14.30,yphB:16.20,cop:223.63,copB:241.22,gc:993.59,gcB:1324.50,hc:76.18,hcB:70.76,man:80,circ:89,sel:74,wk:89,wkR:91,hv:49},
+ {label:"Jan–May 2026",src:"PA 1/2026 · Sufian · costs to Apr 2026",ffb:6569.39,ffbB:7831.04,yph:5.72,yphB:6.81,cop:266.08,copB:286.48,gc:439.60,gcB:501.53,hc:76.28,hcB:91.71,man:54,circ:82,sel:89,wk:91,wkR:97,hv:49}
+];
+const fmt=(n,d=0)=>n.toLocaleString("en-MY",{minimumFractionDigits:d,maximumFractionDigits:d});
+function pct(a,b){return (a-b)/b*100}
+function pill(v,goodIfNeg){const g=goodIfNeg?v<=0:v>=0;const cls=Math.abs(v)<3?"warn":(g?"good":"bad");return `<span class="pill ${cls}">${v>0?"+":""}${v.toFixed(0)}%</span>`}
+function stripe(v,goodIfNeg){const g=goodIfNeg?v<=0:v>=0;return Math.abs(v)<3?"var(--warn)":(g?"var(--good)":"var(--bad)")}
+function render(i){
+ const p=P[i];
+ const f=pct(p.ffb,p.ffbB), y=pct(p.yph,p.yphB), c=pct(p.cop,p.copB), g=pct(p.gc,p.gcB), h=pct(p.hc,p.hcB);
+ const wk=p.wk-p.wkR, mp=p.man;
+ const tiles=[
+  ["FFB to date",`${fmt(p.ffb)} <small>mt</small>`,`${pill(f)}budget ${fmt(p.ffbB)}`,stripe(f)],
+  ["Yield",`${p.yph.toFixed(2)} <small>mt/ha</small>`,`${pill(y)}budget ${p.yphB.toFixed(2)}`,stripe(y)],
+  ["Cost of production",`RM${fmt(p.cop,2)} <small>/mt</small>`,`${pill(c,true)}budget RM${fmt(p.copB,2)}`,stripe(c,true)],
+  ["Harvest & collection",`RM${fmt(p.hc,2)} <small>/mt</small>`,`${pill(h,true)}budget RM${fmt(p.hcB,2)}`,stripe(h,true)],
+  ["General charges",`RM${fmt(p.gc,2)} <small>/ha</small>`,`${pill(g,true)}budget RM${fmt(p.gcB,2)}`,stripe(g,true)],
+  ["Manuring done",`${mp}<small>%</small>`,`<span class="pill ${mp>=90?"good":mp>=75?"warn":"bad"}">${mp>=90?"on track":"behind"}</span>of programme`,mp>=90?"var(--good)":mp>=75?"var(--warn)":"var(--bad)"],
+  ["Workforce",`${p.wk} <small>/ ${p.wkR}</small>`,`<span class="pill ${wk>=0?"good":wk>=-5?"warn":"bad"}">${wk>0?"+":""}${wk}</span>${p.hv} harvesters`,wk>=0?"var(--good)":wk>=-5?"var(--warn)":"var(--bad)"]
+ ];
+ document.getElementById("kpis").innerHTML=tiles.map(t=>`<div class="kpi" style="--s:${t[3]}"><div class="k">${t[0]}</div><div class="v">${t[1]}</div><div class="d">${t[2]}</div></div>`).join("");
+ document.getElementById("pnote").textContent="Source: "+p.src+". Costs are the PA's to-date figures; RM/mt is ex-estate.";
+ document.querySelectorAll(".slicer button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.p==i?"true":"false"));
+ try{localStorage.setItem("ck-period",i)}catch(e){}
+}
+document.querySelectorAll(".slicer button").forEach(b=>b.addEventListener("click",()=>render(+b.dataset.p)));
+let start=2;try{const s=localStorage.getItem("ck-period");if(s!==null)start=+s}catch(e){}
+render(start);
 
-                    <div className="flex border-b border-gray-200 mb-10 overflow-x-auto">
-                        <div className="pb-4 text-[11px] font-bold uppercase tracking-widest text-green-600 relative">
-                            DASHBOARD
-                            <div className="absolute bottom-0 left-0 w-full h-1 bg-green-600 rounded-full"></div>
-                        </div>
-                    </div>
+const fields=[["P95A",16.77,116,12,6.60,7.39,1.57],["P98C",280.19,121,9,5.59,7.40,1.73],["P99D",302.68,124,6,6.67,7.60,1.89],["P01E",300.87,126,4,7.21,9.53,1.68],["P21A",248.78,136,null,2.82,4.20,0.94]];
+document.getElementById("ledger").innerHTML=fields.map(r=>{const v=pct(r[4],r[5]);return `<tr><td>${r[0]}</td><td>${fmt(r[1],2)}</td><td>${r[2]}</td><td>${r[3]==null?"–":r[3]+"%"}</td><td>${r[4].toFixed(2)}</td><td>${r[5].toFixed(2)}</td><td>${pill(v)}</td><td>${r[6].toFixed(2)}</td></tr>`}).join("")+`<tr><td><b>Total</b></td><td><b>1,149.29</b></td><td>126</td><td>6%</td><td><b>5.72</b></td><td>6.81</td><td>${pill(pct(5.72,6.81))}</td><td>1.61</td></tr>`;
 
-                    <div className="animate-in">
-                        <LossAnalysis />
-                        <StationPulse />
-                        <ActionPlan />
-                    </div>
+const flags=[
+ ["bad","Ganoderma census table appears recycled","PA 1/2026 Table 13 reuses the Aug 2024 census rows shifted up one field: P98C's 3,752 dead palms was P97B's figure in 2024 (P97B has since been felled), P99D's 2,573 was P98C's, P01E's 1,387 was P99D's. The Agronomy report states no Ganoderma census was done in 2025 or up to July 2026."],
+ ["bad","PA and Agronomist disagree on 2026 yield direction","PA 1/2026 says 5.72 mt/ha to May is slightly better than last year (5.65). Agronomy 1/2026 says yield to June fell from 7.37 to 6.93 mt/ha (−6%), with bunch weight down 6.4%."],
+ ["warn","FY2024 yield stated two ways","PA 1/2025: 17.03 mt/ha. Agronomy 1/2026 yield history: 17.35 mt/ha. Difference likely from mature-area basis (1,316 vs ~1,220 ha); needs one agreed figure."],
+ ["warn","Barn owl box counts do not reconcile","155 boxes, 63% occupied (Dec 2024) → 115 nests, 35% (Nov 2025) → 155 nests, 6% with 143 damaged (May 2026) → Agronomy counts 12 boxes, 16% (Jul 2026)."],
+ ["warn","Manuring progress figures conflict","PA 1/2026: 346.10 mt applied by May. Agronomy 1/2026: 341.80 mt applied by July. Applied tonnage cannot fall between visits."],
+ ["warn","Typos in PA 2/2025 cost tables","Drains shown as RM2,195.81/ha (budget RM14.06); harvesting incentive shown as RM1,465,339 inside a RM1.2m total; GC shown as RM71.75/mt in the table but RM93.09/mt in the text."],
+ ["warn","FY2024 cost table columns mixed up","PA 1/2025 Table 26 lists GC RM196.63 and H&C RM339.97 per tonne FFB, which cannot sum to the stated RM229.79. Values appear to be in the wrong columns."],
+ ["warn","Mixed review cut-off dates","Each PA report quotes FFB to one month and costs to the previous month (e.g. FFB to May, costs to April). Ratios in this dashboard follow the report as written."]
+];
+document.getElementById("flags").innerHTML=flags.map((f,i)=>`<div class="flag ${f[0]}"><span class="n">${i+1}</span><div><div class="t">${f[1]}</div><p>${f[2]}</p></div></div>`).join("");
 
-                    <footer className="mt-20 border-t border-gray-200 py-10 flex flex-col md:flex-row justify-between items-center text-[10px] text-gray-400 font-bold uppercase tracking-[0.3em] gap-6">
-                        <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
-                            <Icon name="wrench" className="w-4 h-4 mr-2 text-gray-300" />
-                            Engineering Status: <span className="text-green-600 ml-2">Certified</span>
-                        </div>
-                        <div className="flex items-center px-4 py-2 bg-white rounded-full shadow-sm border border-gray-100">
-                            <Icon name="clock" className="w-4 h-4 mr-2 text-gray-300" />
-                            Last Sync: {new Date().toLocaleTimeString()}
-                        </div>
-                        <div>Portal v4.2.5</div>
-                    </footer>
-                </div>
-            );
-        };
+const BLOCKS=[
+ {id:"P95A",ha:19.02,hha:16.77,sph:116,planted:"1995",status:"Mature · tall palm",subs:["A5 19.02"],contractor:"Horizon Enterprise",
+  yields:[["Jan–Nov 2025",19.47,18.51],["Jan–May 2026",6.60,7.39],["Jan–Jun 2025 vs 2026",10.94,7.74,"yoy"]],
+  gano:"294 dead palms, 12% (Aug 2024 census). Highest rate on the estate.",fert:"NK2 2.00 kg/palm (2026 programme).",
+  harvest:"1.57 t/manday · RM43/t · earning RM67.51/day (May 2026). 14% overripe bunches at Jul 2026 check.",pruning:"67% of 2026 programme (Jul 2026).",
+  obs:[["PA 1/2026","pa","EFB at 50 mt/ha budgeted for this field but none applied yet."],["Agro 1/2026","ag","14% overripe in freshly harvested bunches. Improved, but still high."],["Agro 1/2026","ag","YPH to June fell 29%: 10.94 → 7.74 mt/ha, the steepest drop on the estate."],["Agro 1/2026","ag","Path spraying seen at 2-2025 visit, no longer observed."]],
+  actions:["Apply the budgeted EFB","Tighten ripeness standard with harvesters","Confirm whether included in a future replant cycle (SPH 116, 31 years old)"]},
+ {id:"P98C",ha:308.43,hha:280.19,sph:121,planted:"1998",status:"Mature · C1–C3 replant 2027",rp:true,subs:["C1 46.03","C2 62.89","C3 63.25","C4 63.29","C5 72.97"],contractor:"Koo Development (C1–C3), Zian-Zian Plantation (C4–C5)",
+  yields:[["Jan–Nov 2025",15.70,18.53],["Jan–May 2026",5.59,7.40],["Jan–Jun 2025 vs 2026",7.78,6.99,"yoy"]],
+  gano:"2,573 dead, 6% (Aug 2024). PA 1/2026 prints 3,752 (9%) — that figure was P97B's in 2024.",fert:"C1–C3: no manuring (replant 2027). C4, C5: Mix B 2.25 kg/palm.",
+  harvest:"1.73 t/manday (May 2026). Lowest yield vs estimate of the tall-palm fields (−24%).",pruning:"73% of 2026 programme. Poor pruning in C2 and C3.",
+  obs:[["PA 2/2025","pa","Bagworm on about 30 ha; treatment at correct larval stage advised."],["PA 1/2026","pa","Road washed out by floodwater; low-lying, flood-prone with Felda water crossing."],["Agro 1/2026","ag","Many dry hanging fronds in C2 and C3."],["Agro 1/2026","ag","Seed-producing weeds in C2, C3, C4. Giant epiphyte in C4."],["Agro 1/2026","ag","Ganoderma census needed before the 2027 replant to justify it under the SOP."]],
+  actions:["Run Ganoderma census on C1–C3 before replant decision","Desilt drains in low-lying areas","Correct pruning in C2–C3","Lateriting on soggy roads"]},
+ {id:"P99D",ha:317.20,hha:302.68,sph:124,planted:"1999",status:"Mature · tall palm",subs:["D1 52.13","D2 50.22","D3 58.40","D4 81.95","D5 74.50"],contractor:"Zulfathun Enterprise (D2, D3, D5), Zian-Zian Plantation (D1, D4)",
+  yields:[["Jan–Nov 2025",16.69,19.00],["Jan–May 2026",6.67,7.60],["Jan–Jun 2025 vs 2026",8.75,8.30,"yoy"]],
+  gano:"1,387 dead, 3% (Aug 2024). PA 1/2026 prints 2,573 (6%) — P98C's 2024 figure.",fert:"Mix B 2.00 + NK2 1.50 kg/palm, all sub-blocks.",
+  harvest:"1.89 t/manday, best on the estate · earning RM73.71/day. 15% overripe in D4.",pruning:"61% of 2026 programme — behind; no permanent harvesters (PA).",
+  obs:[["PA 1/2026","pa","Pruning slightly behind programme due to no permanent harvesters."],["Agro 1/2026","ag","15% overripe bunches in D4, the highest reading."],["Agro 1/2026","ag","Substantial dry hanging fronds in D2, D4, D5."],["Agro 1/2026","ag","Epiphytes on stems in D1; poisoning started Aug 2026 — use Garlon:diesel 1:10."],["PA 2/2025","pa","Zulfathun short 6 workers (8 vs 14)."]],
+  actions:["Assign permanent harvesters to catch up pruning","Reduce overripe in D4","Push Zulfathun to full crew"]},
+ {id:"P01E",ha:314.33,hha:300.87,sph:126,planted:"2001",status:"Mature · tall palm",subs:["E1 78.79","E2 56.18","E3 26.10","E4 49.86","E5 37.31","E6 32.50","E7 33.59"],contractor:"Horizon Enterprise",
+  yields:[["Jan–Nov 2025",17.04,19.00],["Jan–May 2026",7.21,9.53],["Jan–Jun 2025 vs 2026",9.33,8.74,"yoy"]],
+  gano:"1,786 dead, 4% (Aug 2024). PA 1/2026 prints 1,387 (4%) — P99D's 2024 figure.",fert:"E1–E5: Mix B 2.00 + NK2 1.75. E6–E7: Mix B 2.00 + NK2 2.00 kg/palm.",
+  harvest:"1.68 t/manday. Highest YPH on the estate but 24% under estimate in 2026.",pruning:"96% of 2026 programme — best on the estate; most sub-blocks satisfactory.",
+  obs:[["Agro 1/2026","ag","Rotten / overnight uncollected bunches in E2 and E5."],["Agro 1/2026","ag","Less satisfactory ground cover in E4, E5, E7; incomplete weed kill in E2."],["PA 1/2026","pa","Selective spraying 2nd round in progress; flood-prone low-lying sections."],["PA 2/2025","pa","Desilting of drains advised to keep water flowing to main outlet."]],
+  actions:["Same-day evacuation of harvested bunches in E2, E5","Follow-up weed check 2 weeks after each round","Explain the 24% gap to estimate"]},
+ {id:"P21A",ha:248.78,hha:248.78,sph:136,planted:"Oct 2021",status:"Young mature",subs:["A1 59.08","A2 61.60","A3 65.70","A4 62.40"],contractor:"Horizon Enterprise (A1–A2), DD Koniya Enterprise (A3–A4)",
+  yields:[["FY2024 (first harvest)",1.81,3.00],["Jan–Nov 2025",6.16,6.65],["Jan–May 2026",2.82,4.20],["Jan–Jun 2025 vs 2026",2.63,3.81,"yoy"]],
+  gano:"Not recorded (young planting). Palm census Nov 2025: 35,969 palms, 144/ha.",fert:"Mix B 1.75, Mix B 1.75, RP 2.00, Mix B 1.25, Mix B 1.50 kg/palm (five rounds).",
+  harvest:"0.94 t/manday at RM74/t · earning RM69.56/day. 6% overripe in A4.",pruning:"59% of 2026 programme — lowest. One-sided under-pruning and basal unpruned fronds in A1.",
+  obs:[["PA 2/2025","pa","Sterile palms and mantled bunches seen; census, thinning and supply needed."],["Agro 1/2026","ag","Giant volunteer palms (VOPs) in A1 and A2 — eradicate."],["Agro 1/2026","ag","Path spraying in A3 — not to be routine."],["Agro 1/2026","ag","Rotten bunches left in A1."],["Agro 1/2026","ag","Only block with rising yield to June (+45%), from palm age."]],
+  actions:["Complete thinning and supply of sterile palms","Remove giant VOPs","Fix pruning in A1","Install barn owl boxes or T-perches (none in this block)"],
+  note:"FY2024 estimate shown as 3.00 mt/ha = 748.50 mt ÷ 249.78 ha."},
+ {id:"PR23B",ha:74.80,sph:146,planted:"Aug 2023",status:"Immature · scout harvest",subs:["B1 74.80"],contractor:"DD Koniya Enterprise",
+  yields:[["Jan–Jun 2026 (scout)",1.31,null]],
+  gano:"Palm stand 146/ha (Nov 2025). 280 palms supplied in 2025.",fert:"Comp B 1.20, 1.20, RP 2.00, Comp B 1.20, 1.50 kg/palm.",
+  harvest:"30 months old. Basal pruning on 35 ha; scout harvest 38.44 mt.",pruning:"Basal pruning in progress.",
+  obs:[["PA 1/2026","pa","Cost to maturity RM13,569/ha excluding general charges."],["Agro 1/2026","ag","Rat damage 6% in April, down to 2% by June after baiting."],["PA 1/2026","pa","Lateriting for 10 chains of road not yet started."]],
+  actions:["Supply any dead or sterile palms before maturity","Start the 10-chain lateriting"]},
+ {id:"PR24B",ha:150.57,sph:144,planted:"Oct–Dec 2024",status:"Immature",subs:["B1 150.57"],contractor:"DD Koniya Enterprise",
+  yields:[],
+  gano:"Palm stand 144/ha (Jun 2026 census). High Ganoderma history — annual census advised.",fert:"Comp A 0.90, 1.00, 1.00, RP 1.75, Comp A 1.00 kg/palm. EFB 49.92 mt/ha applied.",
+  harvest:"Ablation started Apr 2026, three rounds at 2-month intervals.",pruning:"–",
+  obs:[["PA 1/2026","pa","Oryctes beetle attacks still seen; treatment to continue."],["Agro 1/2026","ag","Rat damage 11% in April, highest on estate; 2.5 rounds of baiting brought it to 2%."],["PA 2/2025","pa","Upkeep delayed; watermelon grower to share field upkeep."],["PA 1/2026","pa","Cost to maturity RM8,696/ha; part of planting material cost not yet booked."]],
+  actions:["Reconcile planting material cost","Keep Oryctes treatment going","Supply vacant points"]},
+ {id:"PR25B",ha:109.25,sph:144,planted:"Nov 2025 – Jun 2026",status:"Replant · just planted",rp:true,subs:["B1 109.25"],contractor:"DD Koniya Enterprise",
+  yields:[],
+  gano:"Replaced P97B (SPH 66, 41% Ganoderma dead in 2024) and part of P98C. Cambered bunds on low-lying silt.",fert:"600 g CRF + 500 g RP at planting, then Comp A 0.80, RP 1.50 kg/palm.",
+  harvest:"–",pruning:"–",
+  obs:[["Agro 1/2026","ag","Planting delayed; only completed June 2026 after cambered-bund contractor change."],["Agro 1/2026","ag","Significant rhinoceros beetle attack; on Cypermethrin every 15 days. Alika ZC trial suggested."],["PA 1/2026","pa","Cost RM6,225/ha to date, planting material not yet included."],["Agro 1/2026","ag","45.18 chains of new drains built to clear waterlogging."]],
+  actions:["Cost-compare Alika ZC vs Cypermethrin","Infill vacant points to 148/ha","Book planting material cost"]}
+];
+const tiles=document.getElementById("tiles"),sel=document.getElementById("blockSel"),bp=document.getElementById("bpanel");
+function var26(b){const y=b.yields.find(r=>r[0]==="Jan–May 2026");return y?pct(y[1],y[2]):null}
+BLOCKS.forEach(b=>{
+ const v=var26(b),col=v==null?"var(--line)":v>-10?"var(--warn)":"var(--bad)";
+ const t=document.createElement("button");t.type="button";t.className="tile";t.setAttribute("role","option");t.dataset.b=b.id;t.style.setProperty("--s",col);
+ t.innerHTML=`<span class="nm">${b.id}</span><span class="ha">${fmt(b.ha,2)} ha</span><span class="yv">${v==null?b.status.split(" ·")[0]:(v>0?"+":"")+v.toFixed(0)+"% vs est."}</span>`;
+ t.addEventListener("click",()=>showBlock(b.id));tiles.append(t);
+ const o=document.createElement("option");o.value=b.id;o.textContent=`${b.id} · ${b.status}`;sel.append(o);
+});
+sel.addEventListener("change",()=>showBlock(sel.value));
+function showBlock(id,scroll){
+ const b=BLOCKS.find(x=>x.id===id);if(!b)return;
+ sel.value=id;tiles.querySelectorAll(".tile").forEach(t=>t.setAttribute("aria-selected",t.dataset.b===id?"true":"false"));
+ const age=/^\d{4}$/.test(b.planted)?(2026-+b.planted)+" yrs":b.planted;
+ const yrows=b.yields.length?b.yields.map(r=>{const yoy=r[3]==="yoy";const v=r[2]==null?null:pct(r[yoy?2:1],r[yoy?1:2]);
+   return `<tr><td>${r[0]}</td><td>${r[1].toFixed(2)}</td><td>${r[2]==null?"–":r[2].toFixed(2)}</td><td>${v==null?"–":pill(v)}</td></tr>`}).join(""):`<tr><td colspan="4">No harvest yet</td></tr>`;
+ const hasYoy=b.yields.some(r=>r[3]==="yoy");
+ bp.innerHTML=`
+  <div class="bp-top"><h3>${b.id}</h3><span class="status ${b.rp?"rp":""}">${b.status}</span><span class="meta">${b.contractor}</span></div>
+  <div class="facts">
+   <div class="fact"><div class="k">Area</div><div class="v">${fmt(b.ha,2)} <small>ha</small></div></div>
+   <div class="fact"><div class="k">Palms / ha</div><div class="v">${b.sph}</div></div>
+   <div class="fact"><div class="k">Planted</div><div class="v">${b.planted}</div></div>
+   <div class="fact"><div class="k">Age</div><div class="v">${age}</div></div>
+  </div>
+  <div class="bcols">
+   <div class="bsec"><h4>Yield, mt/ha</h4>
+    <div class="tbl"><table><thead><tr><th>Period</th><th>${hasYoy?"Actual / 2025":"Actual"}</th><th>${hasYoy?"Est. / 2026":"Estimate"}</th><th>Var.</th></tr></thead><tbody>${yrows}</tbody></table></div>
+    ${hasYoy?`<p class="note">Last row compares Jan–Jun 2025 with Jan–Jun 2026 (Agronomy 1/2026).</p>`:""}${b.note?`<p class="note">${b.note}</p>`:""}
+   </div>
+   <div class="bsec"><h4>Field status</h4>
+    <ul class="obs">
+     <li><span class="tag">Fertiliser</span><span>${b.fert}</span></li>
+     <li><span class="tag">Harvest</span><span>${b.harvest}</span></li>
+     <li><span class="tag">Pruning</span><span>${b.pruning}</span></li>
+     <li><span class="tag fl">Health</span><span>${b.gano}</span></li>
+    </ul>
+    <h4>Sub-blocks</h4><div class="subs">${b.subs.map(s=>`<span>${s}</span>`).join("")}</div>
+   </div>
+  </div>
+  <div class="bcols">
+   <div class="bsec"><h4>Report comments</h4><ul class="obs">${b.obs.map(o=>`<li><span class="tag ${o[1]==="ag"?"ag":""}">${o[0]}</span><span>${o[2]}</span></li>`).join("")}</ul></div>
+   <div class="bsec"><h4>Open actions</h4><ul class="act">${b.actions.map(a=>`<li>${a}</li>`).join("")}</ul>
+    <button type="button" class="askblock" id="askBlk">Ask a question about ${b.id}</button></div>
+  </div>`;
+ document.getElementById("askBlk").addEventListener("click",()=>{const q=document.getElementById("q");q.value=`Tell me about block ${b.id}: `;document.getElementById("ask").scrollIntoView({behavior:"smooth",block:"start"});q.focus()});
+ if(scroll)document.getElementById("blocks").scrollIntoView({behavior:"smooth",block:"start"});
+}
+showBlock("P98C");
+document.querySelectorAll("#ledger tr").forEach(tr=>{const id=tr.cells[0].textContent.trim();if(BLOCKS.some(b=>b.id===id)){tr.classList.add("clk");tr.tabIndex=0;tr.addEventListener("click",()=>showBlock(id,true));tr.addEventListener("keydown",e=>{if(e.key==="Enter")showBlock(id,true)})}});
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+const KB=`ESTATE: Ladang Cheekah Kemayan, Kosfarm Development Sdn Bhd (Prosper group). Advisor: PARAS. Oil palm mill located on the estate. Terrain flat to undulating; 5-yr avg rainfall ~2,000 mm / 145 rain days. Low-lying fields P98C, P99D, P01E flood-prone (Felda water crosses to Sungai Serting). Neighbours: Ladang Bukit Jin, Felda Triang Selatan, smallholders. Field names: P95A, P97B (felled 2025), P98C, P99D, P01E, P21A, PR23B, PR24B, PR25B. There is NO block called 90B or similar.
+
+=== REPORT A: PA Report 1/2025 (visit 19 Mar 2025, reviews Jan–Dec 2024). Planting Advisor: Adnan bin Mustafa. Estate Manager: Shamsul bin Mohamad Sahib. Visiting Senior Manager: Mat Zin bin Mat Akil ===
+Area Dec 2024: mature 1,316.34 ha; immature 74.80 (P23B); replanting in progress 148.80 (PR24B); total oil palm 1,539.94; title 1,642.83. Fields: P95A 19.02ha SPH116; P97B 80.72 SPH66; P98C 335.29 SPH121; P99D 317.20 SPH124; P01E 314.33 SPH126; P21A 249.78 SPH136.
+Staff: 14 incl. Estate Manager Shamsul (53), Asst Mgrs Mohd Zulkifly, Mohd Murshidi; 6 field conductors.
+Labour Dec 2024: 80 workers (12 checkroll, 68 contract) vs requirement 106 (−26); ratio 1:19 ha. Harvesters 40 + 11 infield collectors = 51 (req 48+11); ratio 1 harvester:26 ha. Weeding mature 4 (req 7), manuring 2 (req 7). Feb 2025: 89 workers vs 93 required; 48 harvesters, ratio 1:25 ha.
+Contractors Dec 2024: SK Bintang (P97B/P01E 395.05ha, 25 vs 19 req), Koo Development (P95A/P98C, 19 vs 23), Raishatun Enterprise (P99D, 15 vs 17), Zian Zian Plantation (FFB transport).
+General charges 2024: RM1,926,089 = RM1,250.76/ha vs budget RM1,570.83 (−20%). Staff quarters 647% over (repairs); bonus 98% over.
+Upkeep & cultivation 2024: RM1,443,662 = RM1,096.72/ha vs budget 1,832.38. Weeding RM181.80/ha (budget 223.45); manuring RM769.85/ha (budget 1,352.78, 57%); pruning RM86.43/ha.
+Weeding 2024: circle 75% of 4,539 ha programme; selective 75% of 4,647.6 ha. Productivity 3.3–4.5 ha/manday (target >5). Contract rate RM38/ha circle, RM39/ha selective.
+Manuring 2024: programme 923.80 mt, delivered 796.60, applied 674.20 mt (72%). RP and MOP 100%, Kieserite 31%, Compact B 75%. Delay: worker shortage, flooding. Feb 2025 progress 52%.
+Pests 2024: Ganoderma census Aug 2024 — dead palms 9,792 (7%), healthy density 132/ha. By field dead palms: P95A 294 (12%), P97B 3,752 (41%), P98C 2,573 (6%), P99D 1,387 (3%), P01E 1,786 (4%). Bagworm 3% (Jul 2024). Rat baiting P21A 2 rounds, P23B 1 round. Barn owl boxes 155 (81 good, 74 damaged), 51 occupied, 63% occupancy of good boxes; no cleaning records.
+Roads 2024: grading 1,229.77 chains @RM10; lateriting 4" 331.66 ch @RM95.
+Harvesting 2024: intervals 12–15 days; productivity 2.0–2.5 t/manday tall palms, P21A 1.0 t/manday @RM90/t; earnings RM68–90/manday; 12 machines (Timac 2, Agrostar 8, TF 2). H&C cost RM64.53/t FFB vs budget 64.96.
+Crop 2024: FFB 21,165.61 mt vs budget 20,563.52 (+3%); YPH 17.03 vs 15.62; CPO 4,259 t; kernel 1,120.81 t; OER 19%, KER 5%. 2023 actual: 20,212.86 mt, YPH 16.63. P21A young mature: 452.82 mt, 1.81 t/ha (60% of estimate).
+Cost of production 2024: RM229.79/t FFB vs budget RM295.40 (−22%).
+P23B immature (planted Aug 2023, DxP Yangambi FELDA, 148/ha): cost from start RM11,062.87/ha. PR24B: planted Oct–Dec 2024, 22,285 palms, 149/ha; cost from start RM4,569.31/ha; watermelon intercrop; Apogonia attack sprayed.
+Nursery: pre-nursery 68,315 seedlings, culling 11.16%, RM6.68/seedling; main nursery 148,815, culling 12%; total culling 23.13%; RM10.18/seedling.
+
+=== REPORT B: PA Report 2/2025 (visit 24 Dec 2025, reviews Jan–Nov 2025; costs to Oct 2025). Planting Advisor: Mohd Sufian bin Yusoff. Estate Manager: Norrafiuddin bin Yusoff (transferred in 1 Sep 2025). Regional Senior Manager: Mat Zin bin Mat Akir ===
+Area Nov 2025: mature 1,208.76 ha (down from 1,316.34 after P97B + part P98C replanted as PR25B); immature 225.37 (PR23B 74.80, PR24B 150.57); replanting PR25B 109.25; total 1,543.38. P98C 308.43 ha.
+Staff: 13, including 7 field conductors (1 per 220 ha — on the high side).
+Labour Nov 2025: 89 workers (17 checkroll, 72 contract) vs requirement 91; ratio 1:17 ha. FFB harvesters 49 (req 49). Driver/loader 5 (req 8), weeding 12 (req 15), manuring 5 (req 6). In 11 months: 29 received, 11 repatriated, 19 absconded, 2 transferred. Contractors 7: Horizon Enterprise, Koo Development (12 vs 18), Zulfathun Enterprise (8 vs 14), Iman CS, Zian-Zian Plantation, Desmond Agro, DD Koniya.
+General charges to Oct 2025: RM993.59/ha vs budget 1,324.50 (−25%).
+Upkeep to Oct 2025: RM1,029.19/ha vs 1,229.52. Weeding 169.76; manuring 744.05 (budget 842.28); pruning 81.21.
+Weeding: circle 89% (3,286 ha); selective 74% (2,863 ha), delayed by unstable worker availability.
+Manuring Jan–Nov 2025: ordered 936.95 mt, received 795.50, applied 749.55 mt (80%). Delay: delivery issue and rain. Advisor says resume after rainy season. Agronomist wanted completion by October.
+Pests: no rat baiting 2025; barn owl 115 nests, 35% occupancy, 124 damaged. Bagworm ~30 ha in P98C. Ganoderma >5% in tall palms; deboling to be expedited.
+Roads: grading 1,583 chains. Drains: 54.24 chains desilted in P21A.
+Harvesting: interval 14–19 days, 19 rounds in 11 months. H&C RM76.18/t vs budget 70.76. 10 machines with 49 harvesters; 1.55 t/harvester/day, 9 t/machine/day.
+Crop Jan–Nov 2025: FFB 16,445.28 mt vs budget 18,629.50 (−12%); YPH 14.30 vs 16.20. By field (actual/estimate mt/ha): P95A 19.47/18.51, P98C 15.70/18.53, P99D 16.69/19.00, P01E 17.04/19.00, P21A 6.16/6.65. Forecast close 2025: YPH 16.
+Cost of production to Oct 2025: RM223.63/t vs budget 241.22 (GC 71.75, U&C 74.70, H&C 76.18).
+P23B 24 months, cost to maturity RM12,622.18/ha; 280 palms supplied. P24B 12 months, 22,285 palms, RM7,634/ha, EFB mulch 60%. PR25B: cambered bund 270 chains, planting began Nov 2025, cost RM3,161.15/ha.
+Nursery: total culling 11.29%; RM9.31/seedling.
+
+=== REPORT C: PA Report 1/2026 (visit 24 Jun 2026, reviews Jan–May 2026; costs to Apr 2026). Planting Advisor: Mohd Sufian bin Yusoff. Plantation Controller: Dr Chua Chin Kok. Senior Manager: Mat Zin bin Mat Akir. Estate Manager: Norrafiuddin bin Yusoff ===
+Area 31 May 2026: mature 1,208.76 ha (P95A 19.02 SPH116; P98C 308.43 SPH121; P99D 317.20 SPH124; P01E 314.33 SPH126; P21A 248.78 SPH136); immature 334.62 (PR23B 74.80, PR24B 150.57, PR25B 109.25, SPH145); total planted 1,543.38; nursery 14.70. Next replanting 2027: P98C blocks 1–3, ~183 ha.
+Staff: 13. Irawanbudiyasa promoted to Junior Asst Manager Jan 2026; 2 new field conductors Feb/Mar 2026.
+Labour 31 May 2026: 91 workers (15 checkroll, 76 contract) vs requirement 97 (−6); ratio 1:17 ha. FFB HARVESTERS 49 vs requirement 55 (−6); ratio 1 harvester:25 ha (recommended 1:22). Driver/loader 3 (req 6), weeding 15 (req 16), manuring 8 (req 7), mandore 2, watchman 2, general workers 12 (req 9). In 5 months: 8 received, 5 repatriated, 1 transferred, 6 absconded.
+Contractors: Horizon Enterprise (645.42 ha, 34 vs 39), Koo Development (172.17 ha, 15 vs 11), Zulfathun (183.12 ha, 7 vs 11), Zian-Zian (207.05 ha, 10 vs 13), DD Koniya (immature 334.62 ha, 10 vs 11), estate/casual 15.
+General charges to Apr 2026: RM652,309 = RM439.60/ha vs budget 501.53 (−12%). Exec salaries +15%, bonus +82%, EPF +27%, consultant fees +31%, electricity +29%.
+Upkeep to Apr 2026: RM408.69/ha vs 447.61. Weeding 75.81; manuring 274.04; pest 1.08; pruning 24.71 (−35%).
+Weeding to May 2026: circle 1,149.29 ha (82% of to-date programme); selective 1,419.34 ha (89%). Productivity 4 ha/manday, earnings RM72–76.
+Manuring 2026 to May: 101 mt of 2025 fertiliser brought forward, applied Feb 2026. Ordered 546.50 mt, applied 346.10 mt = 54% of 1st half programme. Delay: fertiliser delivery issue. Manual: 11 bags/manday (<1kg dose), 25 bags (>1kg). EFB 50 mt/ha budgeted for P95A, none applied yet.
+Pests: rat <10% threshold, no baiting in mature. Barn owl 155 nests, 6% occupancy, 143 damaged. Bagworm: no live larvae (May 2026). Ganoderma table (as printed): P95A 294 dead (12%), P98C 3,752 (9%), P99D 2,573 (6%), P01E 1,387 (4%); total 8,006 (6%), SPH 126. [Integrity note: these rows appear to be the Aug 2024 census shifted up one field.]
+Roads: grading & compaction 1,648 of 2,550 chains. Lateriting 180 chains budget.
+Pruning: 3,676.20 ha done of 3,977.90 programme.
+Harvesting: interval 14–17 days, 10 rounds in 5 months; >90% ripe. H&C RM76.28/t vs budget 91.71 (annual 74.30). Harvester t/day: P95A 1.57, P98C 1.73, P99D 1.89, P01E 1.68, P21A 0.94; avg 1.61. Earnings RM65.52–73.71/day. Rates RM39/t tall palms, RM74/t P21A. 9 machines (Timac 1, Agrostar 7, Toughfar 1).
+Crop Jan–May 2026: FFB 6,569.39 mt vs budget 7,831.04 (−16%); YPH 5.72 vs 6.81; same period 2025: 5.65. By field actual/estimate mt/ha: P95A 6.60/7.39, P98C 5.59/7.40, P99D 6.67/7.60, P01E 7.21/9.53, P21A 2.82/4.20.
+Cost of production to Apr 2026: RM266.08/t vs budget 286.48 (GC 98.36, U&C 91.44, H&C 76.28).
+P23B: 30 months, 148/ha, basal pruning 35 ha, scout harvesting 38.44 mt, cost to maturity RM13,569/ha. P24B: 16 months, ablation from Apr 2026, Oryctes attack, RM8,696/ha. PR25B: planting recently completed after cambered bund delays, 145/ha, 500g RP + 600g Fujicoat in hole, RM6,225/ha excl. planting material.
+Nursery (Prosper): 48,201 seedlings, 8,221 culled (17%), 13,507 sold/used, RM7.84/seedling. UMB nursery: 66,401, culling 14.3%, RM17.74/seedling.
+Vehicles: Tractor Landini DT90 broken down; no vehicle running records.
+
+=== REPORT D: Agronomy Report 1/2026 (visit 30 Jul 2026). Senior Agronomist: Lai Hong Heng ===
+Blocking Jul 2026: P95A 19.02, P98C 308.43, P99D 317.20, P01E 314.33, P21A 248.78, PR23B 74.80, PR24B 150.57, PR25B 109.25. Sub-blocks: P98C1 46.03, C2 62.89, C3 63.25, C4 63.29, C5 72.97; P99D1 52.13, D2 50.22, D3 58.40, D4 81.95, D5 74.50; P01E1 78.79, E2 56.18, E3 26.10, E4 49.86, E5 37.31, E6 32.50, E7 33.59; P21A1 59.08, A2 61.60, A3 65.70, A4 62.40.
+Palm census Nov 2025: P95A 2,214 palms 116/ha; P98C 37,559, 121/ha; P99D 39,319, 124/ha; P01E 39,727, 126/ha; P21A 35,969, 144/ha; PR23B 10,921, 146/ha; PR24B 21,716, 144/ha; PR25B 15,732, 144/ha. 3,371 palms supplied in 2025 (P21A, P23B, P24B).
+Age profile 2026: 42% (644.7 ha) over 26 years; 20.4% (314.0 ha) aged 20–25; none in prime 8–19 years.
+Ganoderma: NO Ganoderma census carried out in 2025 or up to July 2026. Tentative 2027 replant P98C1–3 = 172.2 ha; census recommended to justify. Ganoderma replant SOP: survey silty areas, cambered bunds in low-lying silt, deboling 1.5m holes left open 2–3 months, 29'x29' spacing (148/ha).
+Nursery: Curvularia outbreak reported 7 Jul 2026; recommend alternating Propineb/Mancozeb with Annex Combi, weekly spraying; recovering. CRF 50g Ekot per palm; NPK Yellow 20g at 6 months, 30g at 8 and 10 months.
+Manuring status July 2026: Mature NK2 programme 135.05 mt, applied 4.45 (3%); Mixture B 356.55, applied 270.6 (74%); ARP 67.95, applied 0 (0%). Immature Compound A 64.65, applied 42.35 (66%); Compound B 36.6, applied 24.4 (67%); ARP 20.35, 0. TOTAL 681.15 mt programme, 341.8 applied (50%). Delays: Mix B 2–4 months, NK2 2 months, compound 1–3 months. Reason: catching up FY2025 carry-forward (completed Feb 2026). Do not apply Nov–Dec or carry past Jan 2027. EFB P24B 49.92 mt/ha applied by June 2026. Fertiliser store wet floor worsened.
+2026 FERTILISER PROGRAMME (kg/palm): P95A5: NK2 2.00. P98C1, C2, C3: no manuring (replanting 2027). P98C4 and C5: Mix B 2.25. P99D1–D5: Mix B 2.00 + NK2 1.50. P01E1–E5: Mix B 2.00 + NK2 1.75. P01E6–E7: Mix B 2.00 + NK2 2.00. P21A1–A4: Mix B 1.75, Mix B 1.75, RP 2.00, Mix B 1.25, Mix B 1.50. P23B: Comp B 1.20, Comp B 1.20, RP 2.00, Comp B 1.20, Comp B 1.50. P24B: Comp A 0.90, 1.00, 1.00, RP 1.75, Comp A 1.00. P25B: Comp A 0.80, RP 1.50. New planting/supply: 600g CRF 20:6:14:3 + 500g RP in planting hole, nothing more up to 9 months. Mix B = 45% AS, 40% MOP, 14% Kieserite, 1% borate. NK2 = 60% SOA, 40% MOP. Comp A 14:13:9:2.5; Comp B 12:6:22:3.
+Harvesting: interval Jan–Jun 2026 12–18 days. Overripe bunches: P99D4 15%, P95A 14%, P21A4 6%. Rotten/uncollected bunches in P01E5, P01E2, P21A1.
+Pruning to July 2026: 73% (4,338 of 5,973 ha); P99D 61%, P21A 59%, P01E 96%. Poor pruning in P98C2, P98C3, P99D2, D4, D5. Premature frond snapping (Ganoderma). Epiphyte poisoning started Aug 2026 — use Garlon:diesel 1:10.
+Leaf nutrients: N, P, K, Mg normal to high — satisfactory. 129.91 ha flood-prone. No desilting in 2024 or 2025; new drains 8.60 ch P21A, 45.18 ch PR25B.
+Weeds: below standard; seed-producing weeds in P98C2–C4, P01E5; path spraying in P21A.
+Rats 2026: Apr 3%, May 2%, Jun 1% overall; PR24B 11% in Apr. Bukit Jin neighbour 34–65% damage. Barn owl: 12 boxes, 2 occupied, 16%. Rhinoceros beetle significant in PR25B (Cypermethrin); suggest Alika ZC trial.
+Yield history mt/ha: 2020 19.63, 2021 14.78, 2022 16.42, 2023 16.63, 2024 17.35, 2025 15.37 (−21.7% vs 2020). To June: 2025 7.37 vs 2026 6.93; bunch weight −6.4%. To June by field 2025→2026 YPH: P95A 10.94→7.74, P98C 7.78→6.99, P99D 8.75→8.30, P01E 9.33→8.74, P21A 2.63→3.81, P23B 0→1.31.
+Rainfall mm: 2021 1,790; 2022 1,991; 2023 2,009; 2024 2,224; 2025 2,067 (155 days). 2026 Jan–May 560 mm.
+
+REPORTS NOT YET COMPILED: PA 1/2024, PA 2/2024, Agronomy 1/2024, 2/2024, 1/2025, 2/2025. Earlier years' fertiliser programmes are in those Agronomy reports and are not available here.`;
+
+const RULES=`You answer questions from directors about Ladang Cheekah Kemayan oil palm estate, using ONLY the report extracts below.
+Rules:
+- Answer in 1–5 short numbered points, plain language, mobile friendly. Lead with the direct answer.
+- After each figure, cite the report in brackets, e.g. (PA 1/2026) or (Agronomy 1/2026).
+- If the extracts do not contain the answer, say so plainly and name which uncompiled report would likely have it. Never guess or use outside knowledge.
+- If the user names a block that does not exist (e.g. "90B"), say it is not a block on this estate and suggest the closest real field names.
+- Where two reports disagree, give both figures and flag the discrepancy.
+- Money in RM. No markdown headings, no tables.
+
+REPORT EXTRACTS:
+${KB}`;
+
+(async()=>{
+ const log=document.getElementById("log"),form=document.getElementById("askForm"),q=document.getElementById("q"),send=document.getElementById("send"),stop=document.getElementById("stop"),note=document.getElementById("askNote"),ask=document.getElementById("ask");
+ const sample=window.claude?await window.claude.use("sample"):null;
+ if(!sample){note.textContent="Ask is available when this page is opened in Claude by a signed-in viewer.";form.querySelectorAll("input,button").forEach(e=>e.disabled=true);document.querySelectorAll("#chips button").forEach(b=>b.disabled=true);return}
+ const turns=[];let ctl=null;
+ const add=(cls,t)=>{const d=document.createElement("div");d.className="msg "+cls;d.textContent=t;log.append(d);log.scrollTop=log.scrollHeight;return d};
+ const copy={not_granted:"Claude access was not allowed for this page.",sampling_disabled:"Claude isn't available on this account.",rate_limited:"Too many questions at once. Try again in a minute.",session_expired:"Please sign in to Claude again.",refused:"Claude couldn't answer that. Try rephrasing.",prompt_too_large:"The conversation is too long. Reload the page to start fresh."};
+ async function go(text){
+  text=text.trim();if(!text||ctl)return;
+  add("q",text);q.value="";turns.push({role:"user",content:text});
+  while(turns.length>12)turns.shift();
+  const out=add("a","Thinking…");ctl=new AbortController();send.disabled=true;stop.hidden=false;note.textContent="";
+  try{
+   const {text:ans}=await sample([{role:"user",content:RULES},...turns],{cache:false,signal:ctl.signal,onText:({text})=>{out.textContent=text}});
+   turns.push({role:"assistant",content:ans});
+  }catch(e){
+   turns.pop();
+   if(e.code==="cancelled"){out.textContent=e.text||"Stopped."}
+   else{out.textContent=e.text||(copy[e.code]||"Something went wrong. Try again.");if(!e.text)out.classList.add("err");
+    if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(e.code)){form.querySelectorAll("input,button").forEach(x=>x.disabled=true)}}
+  }finally{ctl=null;send.disabled=false;stop.hidden=true}
+ }
+ form.addEventListener("submit",ev=>{ev.preventDefault();go(q.value)});
+ stop.addEventListener("click",()=>ctl&&ctl.abort());
+ document.querySelectorAll("#chips button").forEach(b=>b.addEventListener("click",()=>go(b.textContent)));
+})();
+
+if(window.Chart){
+ const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+ let charts=[];
+ function build(){
+  charts.forEach(c=>c.destroy());charts=[];
+  const fg=css("--muted"),grid=css("--grid"),frond=css("--frond"),fruit=css("--fruit"),line=css("--line"),bad=css("--bad");
+  Chart.defaults.color=fg;Chart.defaults.font.family="IBM Plex Sans, system-ui, sans-serif";Chart.defaults.font.size=11;
+  Chart.defaults.plugins.legend.labels.boxWidth=10;Chart.defaults.maintainAspectRatio=false;
+  const ax={grid:{color:grid},border:{color:line}};
+  charts.push(new Chart(cYield,{type:"line",data:{labels:["2020","2021","2022","2023","2024","2025"],datasets:[{label:"YPH",data:[19.63,14.78,16.42,16.63,17.03,15.37],borderColor:frond,backgroundColor:frond+"22",fill:true,tension:.25,pointRadius:[3,3,3,3,3,5],pointBackgroundColor:frond}]},options:{plugins:{legend:{display:false}},scales:{x:ax,y:{...ax,min:12,max:21,title:{display:true,text:"mt/ha"}}}}}));
+  charts.push(new Chart(cBudget,{data:{labels:P.map(p=>p.label),datasets:[
+   {type:"bar",label:"FFB actual (mt)",data:P.map(p=>p.ffb),backgroundColor:frond,yAxisID:"y"},
+   {type:"bar",label:"FFB budget (mt)",data:P.map(p=>p.ffbB),backgroundColor:line,yAxisID:"y"},
+   {type:"line",label:"COP RM/mt",data:P.map(p=>p.cop),borderColor:fruit,backgroundColor:fruit,yAxisID:"y1",pointRadius:4},
+   {type:"line",label:"COP budget",data:P.map(p=>p.copB),borderColor:fruit,borderDash:[4,4],pointRadius:0,yAxisID:"y1"}]},
+   options:{scales:{x:ax,y:{...ax,title:{display:true,text:"mt"}},y1:{position:"right",grid:{display:false},min:150,max:320,title:{display:true,text:"RM/mt"}}}}}));
+  charts.push(new Chart(cField,{type:"bar",data:{labels:fields.map(f=>f[0]),datasets:[{label:"Actual",data:fields.map(f=>f[4]),backgroundColor:frond},{label:"Estimate",data:fields.map(f=>f[5]),backgroundColor:line}]},options:{scales:{x:ax,y:{...ax,title:{display:true,text:"mt/ha"}}}}}));
+  charts.push(new Chart(cWork,{type:"bar",data:{labels:P.map(p=>p.label),datasets:[{label:"Manuring",data:P.map(p=>p.man),backgroundColor:fruit},{label:"Circle spray",data:P.map(p=>p.circ),backgroundColor:frond},{label:"Selective spray",data:P.map(p=>p.sel),backgroundColor:frond+"88"}]},options:{scales:{x:ax,y:{...ax,min:0,max:100,title:{display:true,text:"%"}}}}}));
+  charts.push(new Chart(cLabour,{type:"bar",data:{labels:["Harvester","Driver/loader","Weeding","Manuring","General","Mandore","Watchman"],datasets:[{label:"Actual",data:[49,3,15,8,12,2,2],backgroundColor:frond},{label:"Required",data:[55,6,16,7,9,2,2],backgroundColor:line}]},options:{indexAxis:"y",scales:{x:ax,y:{...ax,grid:{display:false}}}}}));
+  charts.push(new Chart(cRain,{type:"bar",data:{labels:["2021","2022","2023","2024","2025"],datasets:[{label:"mm",data:[1790,1991,2009,2224,2067],backgroundColor:frond+"aa"}]},options:{plugins:{legend:{display:false}},scales:{x:ax,y:{...ax,min:0,title:{display:true,text:"mm"}}}}}));
+  charts.push(new Chart(cAge,{type:"bar",data:{labels:["0–7 yrs","8–19 yrs (prime)","20–25 yrs",">26 yrs"],datasets:[{label:"% of estate",data:[37.6,0,20.4,42],backgroundColor:[frond,line,fruit,bad]}]},options:{indexAxis:"y",plugins:{legend:{display:false}},scales:{x:{...ax,min:0,max:50,title:{display:true,text:"% of planted area"}},y:{...ax,grid:{display:false}}}}}));
+ }
+ build();
+ const mq=matchMedia("(prefers-color-scheme: dark)");mq.addEventListener&&mq.addEventListener("change",build);
+ new MutationObserver(build).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+}
+</script>
+
+</body></html>
